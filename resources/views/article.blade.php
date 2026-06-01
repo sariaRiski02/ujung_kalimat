@@ -228,5 +228,35 @@
 
     </main>
 
+    @push
+    <script>
+        // Like toggle
+        function toggleLike(btn) {
+            const isLiked = btn.classList.contains('liked');
+            const countEl = btn.querySelector('.like-count');
+            const count = parseInt(countEl.textContent);
+
+            if (isLiked) {
+                btn.classList.remove('liked');
+                countEl.textContent = count - 1;
+            } else {
+                btn.classList.add('liked');
+                countEl.textContent = count + 1;
+            }
+        }
+
+        // Reply form toggle
+        function toggleReplyForm(btn) {
+            const actionsDiv = btn.closest('div');
+            const replyForm = actionsDiv.nextElementSibling;
+
+            if (replyForm && replyForm.classList.contains('reply-form')) {
+                replyForm.classList.toggle('hidden');
+                if (!replyForm.classList.contains('hidden')) {
+                    replyForm.querySelector('textarea').focus();
+                }
+            }
+        }
+    </script>
 </body>
 </html>
