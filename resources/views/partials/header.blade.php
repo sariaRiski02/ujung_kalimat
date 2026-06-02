@@ -1,4 +1,4 @@
-<nav class="sticky top-0 z-50 bg-white border-b border-gray-200">
+<nav class="sticky top-0 z-50 bg-white border-b border-gray-200"">
     <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
         <!-- Kiri -->
         <div class="flex items-center md:gap-3 lg:gap-6 gap-2 w-full">
@@ -87,23 +87,34 @@
         </div>
 
         <!-- Kanan -->
-        <div class="flex items-center gap-3" x-show="!isOpen">
+        <div class="flex items-center gap-3 " x-show="!isOpen">
 
             {{-- Write button --}}
-            <a href="#" class="text-gray-500 hover:text-black hover:bg-gray-100 transition hidden md:flex lg:flex items-center gap-1.5 px-1 py-1.5 rounded-md ">
+            <a href="#" class=" text-gray-500 hover:text-black hover:bg-gray-100 transition hidden md:flex lg:flex items-center gap-1.5 px-1 py-1.5 rounded-md ">
                 <i class="ti ti-edit text-[18px]" aria-hidden="true"></i>
                 <span class="text-sm md:inline hidden">Write</span>
             </a>
 
             {{-- Notification button --}}
-            <a href="#" class="relative hidden md:flex lg:flex items-center justify-center w-9 h-9 rounded-full text-gray-500 hover:text-black hover:bg-gray-100 transition" aria-label="Notifications">
-                <i class="ti ti-bell text-[20px]" aria-hidden="true"></i>
-                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-[1.5px] border-white"></span>
-            </a>
+            <div x-data="{ notificationOpen: false }">
+                <button @click="notificationOpen = !notificationOpen" type="button" class="relative hidden md:flex lg:flex items-center justify-center w-9 h-9 rounded-full text-gray-500 hover:text-black hover:bg-gray-100 transition" aria-label="Notifications">
+                    <i class="ti ti-bell text-[20px]" aria-hidden="true"></i>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-[1.5px] border-white"></span>
+                </button>
 
-            <!-- Profil Icon / User Menu -->
-            <a href="#" class="hidden md:flex lg:flex items-center justify-center w-9 h-9 rounded-full text-gray-500 hover:text-black hover:bg-gray-100 transition" aria-label="Profile">
-                <i class="ti ti-user-circle text-[24px]" aria-hidden="true"></i>
+                <div
+                    x-show="notificationOpen"
+                    @click.away="notificationOpen = false"
+                    x-transition
+                    class="absolute top-full right-0 mt-2 w-56 bg-white rounded-3xl border border-gray-200 shadow-xl p-4 z-50"
+                >
+                    <p class="text-sm text-gray-400">Belum ada notifikasi</p>
+                </div>
+            </div>
+
+            <!-- Workspace -->
+            <a href="{{ route('workspace.dashboard') }}" class=" hidden md:flex lg:flex items-center justify-center w-9 h-9 rounded-full text-gray-500 hover:text-black hover:bg-gray-100 transition" aria-label="Workspace">
+                <i class="ti ti-layout-dashboard text-[24px]"></i>
             </a>
 
             {{-- login --}}
@@ -111,11 +122,25 @@
                class="bg-black text-white px-4 border py-2 rounded-full text-sm hover:bg-gray-800 transition">
                 Login
             </a> --}}
-            
+
             {{-- navigation on phone --}}
-            <button class="md:hidden text-gray-500 hover:text-black p-2 cursor-pointer">
-                <i class="ti ti-layout-grid text-[24px]" aria-hidden="true"></i>
-            </button>
+            <div x-data="{ mobileMenuOpen: false }">
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-gray-500 hover:text-black p-2 cursor-pointer">
+                    <i class="ti ti-layout-grid text-[24px]" aria-hidden="true"></i>
+                </button>
+                <!-- Kotak Dropdown -->
+                <div
+                    x-show="mobileMenuOpen"
+                    @click.away="mobileMenuOpen = false"
+                    x-transition
+                    class="absolute top-full right-0 mt-2 w-56 bg-white rounded-3xl border border-gray-200 shadow-xl p-4 z-50"
+                >
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition">Home</a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition">Write</a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition">Notifications</a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition">Profile</a>
+                </div>
+            </div>
 
         </div>
 
