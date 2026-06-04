@@ -10,3 +10,5 @@ Route::view('/workspace/articles', 'pages.pageWorkspace.listArticle')->name('wor
 Route::view('/workspace/monetization', 'pages.pageWorkspace.monetization')->name('workspace.monetization');
 Route::view('/workspace/following', 'pages.pageWorkspace.following')->name('workspace.following');
 Route::view('/workspace/followers', 'pages.pageWorkspace.followers')->name('workspace.followers');
+Route::view('/workspace/profile', 'pages.pageWorkspace.profile')->name('workspace.profile');
+Route::view('/workspace/article/id/analytics', 'pages.pageWorkspace.analyticDetailArticle')->name('workspace.article.analytics');

@@ -120,8 +120,8 @@
 
         {{-- Profile --}}
         <div class="border-t border-gray-100 p-3">
-            <a href="#"
-               class="flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+            <a href="{{ route('workspace.profile') }}"
+               class="flex items-center gap-3 px-2 py-2 rounded-lg text-sm {{ request()->routeIs('workspace.profile') ? 'text-gray-900 bg-gray-100' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900' }} transition-colors"
                :class="open ? '' : 'justify-center'"
             >
                 <img src="https://i.pravatar.cc/80?img=12" class="w-6 h-6 rounded-full shrink-0 object-cover" alt="">
