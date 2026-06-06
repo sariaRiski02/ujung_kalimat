@@ -12,3 +12,7 @@ Route::view('/workspace/following', 'pages.pageWorkspace.following')->name('work
 Route::view('/workspace/followers', 'pages.pageWorkspace.followers')->name('workspace.followers');
 Route::view('/workspace/profile', 'pages.pageWorkspace.profile')->name('workspace.profile');
 Route::view('/workspace/article/id/analytics', 'pages.pageWorkspace.analyticDetailArticle')->name('workspace.article.analytics');
+
+
+Route::view('/signin', 'pages.auth.signin')->name('signin');
+Route::view('/signup', 'pages.auth.signup')->name('signup');
