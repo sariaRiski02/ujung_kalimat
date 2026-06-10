@@ -90,7 +90,7 @@
         <div class="flex items-center gap-3 " x-show="!isOpen">
 
             {{-- Write button --}}
-            <a href="#" class=" text-gray-500 hover:text-black hover:bg-gray-100 transition hidden md:flex lg:flex items-center gap-1.5 px-1 py-1.5 rounded-md ">
+            <a href="{{ route('workspace.write') }}" class=" text-gray-500 hover:text-black hover:bg-gray-100 transition hidden md:flex lg:flex items-center gap-1.5 px-1 py-1.5 rounded-md ">
                 <i class="ti ti-edit text-[18px]" aria-hidden="true"></i>
                 <span class="text-sm md:inline hidden">Write</span>
             </a>

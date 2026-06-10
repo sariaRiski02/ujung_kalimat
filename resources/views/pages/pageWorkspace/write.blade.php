@@ -2,21 +2,50 @@
 
 @section('content')
 
-    <form class=" min-h-200 transition-all duration-300 p-8 items-center"
+    <form action="{{route('workspace.write')}}" method="POST" class=" min-h-200 transition-all duration-300 p-8 items-center"
         :class="open ? 'ml-56' : 'ml-14'">
-
+        @csrf
         {{--  header --}}
         <div class="mb-8 flex items-center justify-between ">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900 font-serif">New Article</h1>
             </div>
 
-                                
-            <div>
-                <button class="bg-green-600 text-white text-base font-medium px-6 py-2 rounded-full min-w-[50px] text-center">
+            <div class="flex items-center gap-3">
+
+                {{-- Toggle Premium --}}
+                <button
+                    type="button"
+                    x-data="{ premium: true }"
+                    @click="premium = !premium"
+                    class="flex items-center gap-2 bg-gray-100 border border-gray-200 rounded-full px-4 py-1.5 text-sm font-medium cursor-pointer"
+                    :class="premium ? 'text-amber-600' : 'text-gray-500'"
+                >
+                    <i class="ti" :class="premium ? 'ti-lock' : 'ti-lock-open'" aria-hidden="true"></i>
+                    <span x-text="premium ? 'Premium' : 'Free'"></span>
+
+                    <input type="hidden" name="is_premium" :value="premium ? 1 : 0">
+                </button>
+
+                {{-- Save as Draft --}}
+                <button
+                    type="button"
+                    class="flex items-center gap-2 border border-gray-300 rounded-full px-4 py-1.5 text-sm font-medium text-gray-500"
+                >
+                    <i class="ti ti-device-floppy" aria-hidden="true"></i>
+                    Save as draft
+                </button>
+
+                {{-- Publish --}}
+                <button
+                    type="submit"
+                    class="bg-green-600 text-white text-sm font-medium px-5 py-1.5 rounded-full"
+                >
                     Publish
                 </button>
+
             </div>
+
         </div>
 
         <div class="max-w-3xl px-6 mx-auto">
@@ -28,7 +57,7 @@
                     <input
                         id="coverImage"
                         type="file"
-                        name="cover_image"
+                        name="image"
                         accept="image/*"
                         class="hidden">
 
@@ -51,6 +80,7 @@
             <textarea
                 rows="1"
                 placeholder="Title"
+                name="title"
                 class="
                     title-block
                     w-full
@@ -73,6 +103,7 @@
                 <textarea
                     rows="1"
                     placeholder="Tell your story..."
+                    name="content[]"
                     class="
                         story-block
                         w-full
@@ -93,6 +124,44 @@
         </div>
 
     </main>
+
+
+    <div
+        x-data="{ openModal: {{ $errors->any() ? 'true' : 'false' }} }"
+        x-show="openModal"
+        x-transition.opacity
+        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+    >
+        <div class="bg-white rounded-2xl border border-gray-100 p-6 w-[420px] max-w-[90%]">
+
+            {{-- Header --}}
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
+                        <i class="ti ti-alert-circle text-red-500 text-lg" aria-hidden="true"></i>
+                    </div>
+                    <span class="text-sm font-medium text-gray-900">Ada beberapa kesalahan</span>
+                </div>
+                <button type="button" @click="openModal = false" class="text-gray-400 hover:text-gray-600">
+                    <i class="ti ti-x text-lg" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <hr class="border-gray-100 mb-4">
+
+            {{-- Error list --}}
+            <ul class="flex flex-col gap-2">
+                @foreach ($errors->all() as $error)
+                    <li class="flex items-start gap-2 bg-red-50 rounded-lg px-3 py-2.5">
+                        <i class="ti ti-point-filled text-red-400 text-sm mt-0.5 shrink-0" aria-hidden="true"></i>
+                        <span class="text-sm text-red-600">{{ $error }}</span>
+                    </li>
+                @endforeach
+            </ul>
+
+        </div>
+    </div>
+    
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -129,6 +198,7 @@
                 textarea.rows = 1;
 
                 textarea.placeholder = 'Continue..';
+                textarea.name = 'content[]';
 
                 textarea.className = `
                     story-block
