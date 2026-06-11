@@ -31,19 +31,28 @@
                     <p class="text-sm text-gray-500 leading-relaxed line-clamp-2 mb-3">
                         {{ str($article->clean_content)->limit(100) }}
                     </p>
-
-                    
-
-                    
                 </div>
 
                 <!-- Thumbnail -->
                 <div class="shrink-0">
-                    <img
-                        src="https://picsum.photos/seed/medium/300/200"
-                        alt=""
-                        class="w-28 h-[72px] object-cover rounded-sm"
-                    >
+
+        
+                    @if (!blank($article->image))
+                        <img
+                            src="{{ asset('storage/'. $article->image->first()->url )}}"
+                            alt=""
+                            class="w-28 h-[72px] object-cover rounded-sm"
+                        >
+                    @else
+
+                    <div class="w-28 h-[72px] rounded-sm bg-[#F1EFE8] border border-[#B4B2A9] flex items-center justify-center">
+                        <span class="bg-[#2C2C2A] text-[#F1EFE8] text-[13px] font-serif px-3 py-1 rounded-full tracking-wide" style="font-family: var(--font-serif)">
+                            UK
+                        </span>
+                    </div>
+
+                    @endif
+
                 </div>
 
             </div>

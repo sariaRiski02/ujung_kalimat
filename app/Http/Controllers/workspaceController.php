@@ -3,16 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreArticleRequest;
+use App\Models\Article;
 use App\Services\ArticleService;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class workspaceController extends Controller
 {
 
 
     public function __construct(
-        protected ArticleService $service
-        
+        protected ArticleService $service   
     ){}
 
     public function dashboard(){
@@ -23,17 +23,12 @@ class workspaceController extends Controller
         return view('pages.pageWorkspace.write');
     }
 
-
-
     public function store(StoreArticleRequest $request){
         $this->service->store($request);
     }
 
 
-
-    public function articles(){
-        return view('pages.pageWorkspace.listArticle');
-    }
+    
     public function monetization(){
         return view('pages.pageWorkspace.monetization');
     }

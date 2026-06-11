@@ -28,10 +28,10 @@ class StoreArticleRequest extends FormRequest
             'title' => 'required|string|max:255',
             'content' => 'required|array',
             'content.*' => 'required|string|min:1',
-            'images' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'images' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5048',
             'is_premium' => 'required|boolean',
+            'status' => 'required|in:draft,published'
         ];
-
     }
 
     

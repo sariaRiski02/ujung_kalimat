@@ -3,7 +3,7 @@
 @section('content')
 
     <form action="{{route('workspace.write')}}" method="POST" class=" min-h-200 transition-all duration-300 p-8 items-center"
-        :class="open ? 'ml-56' : 'ml-14'">
+        :class="open ? 'ml-56' : 'ml-14'" enctype="multipart/form-data">
         @csrf
         {{--  header --}}
         <div class="mb-8 flex items-center justify-between ">
@@ -11,7 +11,8 @@
                 <h1 class="text-2xl font-bold text-gray-900 font-serif">New Article</h1>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3" 
+                x-data="{status: 'draft'}">
 
                 {{-- Toggle Premium --}}
                 <button
@@ -29,7 +30,8 @@
 
                 {{-- Save as Draft --}}
                 <button
-                    type="button"
+                    type="submit"
+                    @click="status = 'draft'"
                     class="flex items-center gap-2 border border-gray-300 rounded-full px-4 py-1.5 text-sm font-medium text-gray-500"
                 >
                     <i class="ti ti-device-floppy" aria-hidden="true"></i>
@@ -40,10 +42,12 @@
                 <button
                     type="submit"
                     class="bg-green-600 text-white text-sm font-medium px-5 py-1.5 rounded-full"
+                    @click="status = 'published'"
                 >
                     Publish
                 </button>
 
+                <input type="hidden" name="status" :value="status">
             </div>
 
         </div>

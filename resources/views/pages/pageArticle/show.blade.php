@@ -58,12 +58,18 @@
 
     </header>
 
+    
     {{-- Cover image --}}
-    <img
-        src="https://picsum.photos/seed/writing/900/500"
-        alt=""
-        class="w-full h-80 md:h-96 object-cover mb-10"
-    >
+
+    @if(!blank($article->image))
+        <img
+            src="{{asset('storage/' . $article->image->first()->url)}}"
+            alt=""
+            class="w-full h-80 md:h-96 object-cover mb-10"
+        >
+    @endif
+
+    
 
     {{-- Body --}}
     <article class="
