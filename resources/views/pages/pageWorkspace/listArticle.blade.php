@@ -40,15 +40,22 @@
 
             </div>
             
-            <div class="relative w-full md:w-auto">
-                <i class="ti ti-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
-                <input 
-                    type="text" 
-                    value="{{ request('search') }}"
-                    placeholder="Cari artikel..."
-                    class="pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-black/5 shadow-sm w-full md:w-56"
-                    @keyup.enter="if($el.value.trim()) { window.location.href = '{{ route('workspace.articles') }}?search=' + encodeURIComponent($el.value) + '{{ request('filter') ? '&filter='.request('filter') : '' }}' } else { window.location.href = '{{ route('workspace.articles') }}{{ request('filter') ? '?filter='.request('filter') : '' }}' }"
-                >
+            <div class="flex items-center gap-2">
+                <a href="{{ route('workspace.articles')}}" 
+                    class="p-2 rounded-full bg-white border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50 transition flex items-center justify-center shadow-sm"
+                    title="Clear Search">
+                        <i class="ti ti-x text-base font-bold"></i>
+                    </a>
+                <div class="relative w-full md:w-auto">
+                    <i class="ti ti-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                    <input 
+                        type="text" 
+                        value="{{ request('search') }}"
+                        placeholder="Cari artikel..."
+                        class="pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-black/5 shadow-sm w-full md:w-56"
+                        @keyup.enter="if($el.value.trim()) { window.location.href = '{{ route('workspace.articles') }}?search=' + encodeURIComponent($el.value) + '{{ request('filter') ? '&filter='.request('filter') : '' }}' } else { window.location.href = '{{ route('workspace.articles') }}{{ request('filter') ? '?filter='.request('filter') : '' }}' }"
+                    >
+                </div>
             </div>
         </div>
 

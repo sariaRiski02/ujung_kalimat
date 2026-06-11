@@ -10,31 +10,43 @@ class listArticleWorkspaceController extends Controller
 {
 
     public function index(Request $request){
-    
-        
+        $query = Article::query();
+        if($request->filled('search')){
+            $searchTerm = $request->search;
 
-        $articles = Article::latest();
-        $statuses = $articles->get()->pluck('status')->countBy();
-        $draftCount = $statuses['draft'];
-        $publishedCount = $statuses['published'];
-        $totalArticles = $articles->count();
-        
+            $premiumMap = [
+                'premium' => 1,
+                'gratis' => 0,
+                'free' => 0,
+                'berbayar' => 1
+            ];
+            $premiumValue = $premiumMap[strtolower($searchTerm)] ?? null;
 
-        if(Auth::check()){
-            $articles = Article::where('user_id', Auth::user()->id)->latest();
-            $statuses = $articles->get()->pluck('status')->countBy();
-            $draftCount = $statuses['draft'];
-            $publishedCount = $statuses['published'];
-            $totalArticles = $articles->count();
-        }
-        
-        if($request->filled(['filter', 'search']) ){
+            $query->where(function($q) use ($searchTerm, $premiumValue){
+                $q->where('title', 'like', "%{$searchTerm}%")
+                    ->orWhere('content', 'like', "%{$searchTerm}%")
+                    ->orWhere('status', 'like', "{$searchTerm}");
+
+                if(!is_null($premiumValue)){
+                    $q->orWhere('is_premium', $premiumValue);
+                }
+            });
+
             
-            $articles->where('status', $request->query('filter'))->latest();
-            
         }
-        $articles = $articles->paginate(10);
 
+        $totalArticles = (clone $query)->count();
+        $draftCount = (clone $query)->where('status', 'draft')->count();
+        $publishedCount = (clone $query)->where('status', 'published')->count();
+
+
+        if($request->filter == 'draft'){
+            $query->where('status', 'draft');
+        }elseif($request->filter == 'published'){
+            $query->where('status', 'published');
+        }
+
+        $articles = $query->latest()->paginate(10)->withQueryString();
     
         return view('pages.pageWorkspace.listArticle', compact('articles','publishedCount', 'draftCount','totalArticles'));
     }
