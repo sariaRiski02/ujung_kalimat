@@ -23,8 +23,25 @@ class workspaceController extends Controller
         return view('pages.pageWorkspace.write');
     }
 
+    public function update(Article $article){
+        
+        $contents = $article->array_content;
+        $title = $article->clean_title;
+        $article->load('image');
+
+        return view('pages.pageWorkspace.update', compact(
+            'article','contents', 'title'
+        ));
+    }
+
+    public function edit(StoreArticleRequest $request, Article $article){
+        $this->service->update($article, $request);
+        return redirect()->route('workspace.articles');
+    }
+
     public function store(StoreArticleRequest $request){
         $this->service->store($request);
+        return redirect()->route('workspace.articles');
     }
 
 

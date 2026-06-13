@@ -5,6 +5,7 @@ namespace App\Models;
 
 use App\Models\Image;
 use App\Models\User;
+use App\Services\HelperService;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,6 +33,21 @@ class Article extends Model
         );
     }
 
+    protected function arrayContent(): Attribute
+    {
+        $service = app(HelperService::class);
+        return Attribute::make(
+            get: fn() => $service->extractTagContent($this->content)
+        );
+    }
+
+    protected function cleanTitle(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => strip_tags($this->title)
+        );
+    }
+
     public function getSlugOptions(): SlugOptions{
         return SlugOptions::create()
             ->generateSlugsFrom('title')
@@ -43,7 +59,26 @@ class Article extends Model
     protected static function booted()
     {
         static::creating(function(Article $article){
-            $article->content = implode("",$article->content);
+            
+            $arrayTemp = array_map(function($item){
+                if($item['type'] == 'paragraph'){
+                    return '<p>' . $item['text'] . '</p>';
+                }else {
+                    return '<blockquote>' . $item['text'] . '</blockquote>';
+                }
+            },$article->content);
+            $article->content = implode('', $arrayTemp);
+        });
+
+        static::updating(function(Article $article){
+            $arrayTemp = array_map(function($item){
+                if($item['type'] == 'paragraph'){
+                    return '<p>' . $item['text'] . '</p>';
+                }else {
+                    return '<blockquote>' . $item['text'] . '</blockquote>';
+                }
+            },$article->content);
+            $article->content = implode('', $arrayTemp);
         });
 
         static::creating(function(Article $article){

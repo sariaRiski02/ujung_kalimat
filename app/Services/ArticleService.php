@@ -24,8 +24,10 @@ class ArticleService
 
 
     }
-    public function update(array $data){
-
+    public function update(Article $article, StoreArticleRequest $request){
+        $data = $request->except('image');
+        $article->update($data);
+        
     }
     public function delete(){}
 

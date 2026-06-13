@@ -2,9 +2,10 @@
 
 @section('content')
 
-    <form action="{{route('workspace.write')}}" method="POST" class=" min-h-200 transition-all duration-300 p-8 items-center"
+    <form action="{{route('workspace.article.edit',$article->slug)}}" method="POST" class=" min-h-200 transition-all duration-300 p-8 items-center"
         :class="open ? 'ml-56' : 'ml-14'" enctype="multipart/form-data">
         @csrf
+        @method('PUT')
         {{--  header --}}
         <div class="mb-8 flex items-center justify-between ">
             <div>
@@ -99,7 +100,7 @@
                     leading-tight
                     mb-8
                 "
-            >{{old('title')}}</textarea>
+            >{{old('title') ?? $title}}</textarea>
 
             <!-- Content -->
             @php
@@ -147,35 +148,75 @@
 
                 @else
 
-                    <div class="story-wrapper group relative flex items-start gap-2" data-index="0">
-                        <input type="hidden" name="content[0][type]" value="paragraph" class="block-type">
+                
+                    @foreach ($contents as $index => $content)
+                        
+                        @if($content['tag'] == 'p')
+                        <div class="story-wrapper group relative flex items-start gap-2" data-index="{{$index}}">
+                            <input type="hidden" name="content[0][type]" value="paragraph" class="block-type">
 
-                        <button
-                            type="button"
-                            class="quote-toggle text-4xl font-serif text-gray-400 leading-tight opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200 hover:text-gray-600"
-                        >
-                            &ldquo;
-                        </button>
+                            <button
+                                type="button"
+                                class="quote-toggle text-4xl font-serif text-gray-400 leading-tight opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200 hover:text-gray-600"
+                            >
+                                &ldquo;
+                            </button>
 
-                        <textarea
-                            rows="1"
-                            placeholder="Tell your story..."
-                            name="content[0][text]"
-                            class="
-                                story-block
-                                w-full
-                                resize-none
-                                overflow-hidden
-                                border-none
-                                outline-none
-                                text-xl
-                                leading-relaxed
-                                font-serif
-                                placeholder-gray-400
-                                mb-5
-                            "
-                        ></textarea>
-                    </div>
+                            <textarea
+                                rows="1"
+                                placeholder="Tell your story..."
+                                name="content[0][text]"
+                                class="
+                                    story-block
+                                    w-full
+                                    resize-none
+                                    overflow-hidden
+                                    border-none
+                                    outline-none
+                                    text-xl
+                                    leading-relaxed
+                                    font-serif
+                                    placeholder-gray-400
+                                    mb-5
+                                "
+                                
+                            >{{$content['text']}}</textarea>
+                        </div>
+                        @else
+                            <div class="story-wrapper group relative flex items-start gap-2 border-l-4 border-gray-300 pl-4" data-index="{{ $index }}">
+                                <input type="hidden" name="content[{{ $index }}][type]" value="quote" class="block-type">
+
+                                <button
+                                    type="button"
+                                    class="quote-toggle active text-4xl font-serif text-gray-700 leading-tight opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200 hover:text-gray-600"
+                                >
+                                    &ldquo;
+                                </button>
+
+                                <textarea
+                                    rows="1"
+                                    placeholder="Tell your story..."
+                                    name="content[{{ $index }}][text]"
+                                    class="
+                                        story-block
+                                        w-full
+                                        resize-none
+                                        overflow-hidden
+                                        border-none
+                                        outline-none
+                                        text-xl
+                                        leading-relaxed
+                                        font-serif
+                                        italic
+                                        text-gray-700
+                                        placeholder-gray-400
+                                        mb-5
+                                    "
+                                >{{ $content['text'] }}</textarea>
+                            </div>
+                        @endif
+                        
+                    @endforeach
 
                 @endif
 

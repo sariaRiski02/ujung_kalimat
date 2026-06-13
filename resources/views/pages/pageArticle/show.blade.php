@@ -76,7 +76,7 @@
         prose prose-xl max-w-none
         prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-gray-900
         prose-p:text-gray-800 prose-p:leading-[1.85] prose-p:font-serif
-        prose-blockquote:border-l-[3px] prose-blockquote:border-gray-900 prose-blockquote:pl-6 prose-blockquote:not-italic prose-blockquote:text-gray-500 prose-blockquote:font-serif prose-blockquote:text-xl
+        prose-blockquote:border-l-[3px] prose-blockquote:border-gray-900 prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-gray-500 prose-blockquote:font-serif prose-blockquote:text-xl
         prose-strong:text-gray-900 prose-strong:font-bold
         prose-a:text-gray-900 prose-a:underline prose-a:underline-offset-2
     ">
@@ -85,6 +85,7 @@
 
     </article>
 
+    
     
     <hr class="border-t border-gray-200 my-5">
     @include('pages.pageArticle.comment')

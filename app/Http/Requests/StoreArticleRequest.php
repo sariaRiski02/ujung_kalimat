@@ -24,10 +24,12 @@ class StoreArticleRequest extends FormRequest
      */
     public function rules(): array
     {
+        
         return [
             'title' => 'required|string|max:255',
             'content' => 'required|array',
-            'content.*' => 'required|string|min:1',
+            'content.*.type' => 'required|string|in:paragraph,quote',
+            'content.*.text' => 'required|string|min:1',
             'images' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5048',
             'is_premium' => 'required|boolean',
             'status' => 'required|in:draft,published'

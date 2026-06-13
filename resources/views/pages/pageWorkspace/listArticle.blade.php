@@ -134,7 +134,7 @@
                                     </form>
 
                                     {{-- Toggle Premium --}}
-                                    <form method="POST" action="{{route('workspace.article.tipe', $article->slug)}}" x-data class="inline-block">
+                                    <form method="POST" action="{{route('workspace.article.type', $article->slug)}}" x-data class="inline-block">
                                         @csrf @method('PUT')
                                         <label class="inline-flex items-center gap-2 cursor-pointer select-none">
                                             <div class="relative inline-flex items-center">
@@ -155,7 +155,7 @@
                             {{-- Aksi --}}
                             <td class="px-5 py-4 text-right">
                                 <div class="flex items-center justify-end gap-1">
-                                    <a href=""
+                                    <a href="{{route('workspace.article.update', $article->slug)}}"
                                         class="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition"
                                         title="Edit">
                                         <i class="ti ti-pencil"></i>

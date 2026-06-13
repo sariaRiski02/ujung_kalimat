@@ -18,7 +18,9 @@ Route::group(['prefix' => 'workspace'], function(){
     
     Route::get('/articles', [listArticleWorkspaceController::class, 'index'])->name('workspace.articles');
     Route::put('/article/{article:slug}/status', [listArticleWorkspaceController::class,'status'])->name('workspace.article.status');
-    Route::put('/article/{article:slug}/type', [listArticleWorkspaceController::class, 'type'])->name('workspace.article.tipe');
+    Route::put('/article/{article:slug}/type', [listArticleWorkspaceController::class, 'type'])->name('workspace.article.type');
+    Route::get('/article/{article:slug}/update', [workspaceController::class, 'update'])->name('workspace.article.update');
+    Route::put('/article/{article:slug}/update', [workspaceController::class, 'edit'])->name('workspace.article.edit');
     
     
     Route::get('/monetization', [workspaceController::class, 'monetization'])->name('workspace.monetization');
