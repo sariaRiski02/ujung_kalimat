@@ -36,14 +36,18 @@ class workspaceController extends Controller
 
     public function edit(StoreArticleRequest $request, Article $article){
         $this->service->update($article, $request);
-        return redirect()->route('workspace.articles');
+        return redirect()->route('workspace.articles')->with('success', 'article has been updated');
     }
 
     public function store(StoreArticleRequest $request){
         $this->service->store($request);
-        return redirect()->route('workspace.articles');
+        return redirect()->route('workspace.articles')->with('success','article has been store');
     }
 
+    public function delete(Article $article){
+        $article->delete();
+        return redirect()->route('workspace.articles')->with('success', 'article has been deleted');
+    }
 
     
     public function monetization(){

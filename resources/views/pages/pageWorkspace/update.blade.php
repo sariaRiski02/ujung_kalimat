@@ -233,7 +233,7 @@
         x-transition.opacity
         class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
     >
-        <div class="bg-white rounded-2xl border border-gray-100 p-6 w-[420px] max-w-[90%]">
+        <div class="bg-white rounded-2xl border border-gray-100 p-6 w-105 max-w-[90%]">
 
             {{-- Header --}}
             <div class="flex items-center justify-between mb-4">

@@ -21,7 +21,7 @@ Route::group(['prefix' => 'workspace'], function(){
     Route::put('/article/{article:slug}/type', [listArticleWorkspaceController::class, 'type'])->name('workspace.article.type');
     Route::get('/article/{article:slug}/update', [workspaceController::class, 'update'])->name('workspace.article.update');
     Route::put('/article/{article:slug}/update', [workspaceController::class, 'edit'])->name('workspace.article.edit');
-    
+    Route::delete('/article/{article:slug}/delete', [workspaceController::class, 'delete'])->name('workspace.article.delete');
     
     Route::get('/monetization', [workspaceController::class, 'monetization'])->name('workspace.monetization');
     Route::get('/following', [workspaceController::class, 'following'])->name('workspace.following');

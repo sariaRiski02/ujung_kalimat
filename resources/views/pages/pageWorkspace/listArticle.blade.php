@@ -165,7 +165,7 @@
                                         title="Statistik">
                                         <i class="ti ti-chart-bar"></i>
                                     </a>
-                                    <form method="POST" action=""
+                                    <form method="POST" action="{{route('workspace.article.delete', $article->slug)}}"
                                         onsubmit="return confirm('Hapus artikel ini?')" class="inline">
                                         @csrf @method('DELETE')
                                         <button type="submit"

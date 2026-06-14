@@ -71,6 +71,11 @@ class Article extends Model
         });
 
         static::updating(function(Article $article){
+
+            if($article->isDirty('status') || $article->isDirty('is_premium')){
+                return;
+            }
+
             $arrayTemp = array_map(function($item){
                 if($item['type'] == 'paragraph'){
                     return '<p>' . $item['text'] . '</p>';
