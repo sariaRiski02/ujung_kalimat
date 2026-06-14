@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Article;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -27,13 +28,14 @@ class ArticleFactory extends Factory
         $offset = rand(1, count($content));
         $blockQoute = '<blockquote>"' .  $this->faker->paragraph(2) . '"</blockquote>';
         array_splice($content, $offset, 0, $blockQoute);
+        
         return [
             'title' => $this->faker->sentence(),
             'slug' => $this->faker->slug(),
             'content' => implode(' ', $content),
             'status' => $this->faker->randomElement(['published', 'draft']),
             'is_premium' => $this->faker->boolean(),
-            'user_id' => UserFactory::new()->create()->id,
+            'user_id' => User::inRandomOrder()->first()->id,
         ];
     }
 }

@@ -12,10 +12,10 @@
         <div class="w-full max-w-sm">
 
             <h1 class="font-serif text-3xl font-bold text-[#1a1a2e] text-center leading-tight mb-1.5">
-                Selamat datang kembali.
+                Welcome back.
             </h1>
             <p class="text-sm text-gray-400 text-center mb-9">
-                Masuk untuk melanjutkan membaca dan menulis.
+                Sign in to continue reading and writing.
             </p>
 
             {{-- Google --}}
@@ -27,7 +27,7 @@
                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                 </svg>
-                Lanjutkan dengan Google
+                Continue with Google
             </a>
 
             {{-- Facebook --}}
@@ -36,18 +36,18 @@
                 <svg class="w-5 h-5" viewBox="0 0 24 24">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" fill="#1877F2"/>
                 </svg>
-                Lanjutkan dengan Facebook
+                Continue with Facebook
             </a>
 
             {{-- Divider --}}
             <div class="flex items-center gap-3 mb-5">
                 <div class="flex-1 h-px bg-gray-200"></div>
-                <span class="text-xs text-gray-300">atau</span>
+                <span class="text-xs text-gray-300">or</span>
                 <div class="flex-1 h-px bg-gray-200"></div>
             </div>
 
             {{-- Form --}}
-            <form method="POST" action="">
+            <form method="POST" action="{{ route('signin.post') }}">
                 @csrf
 
                 <div class="mb-4">
@@ -62,38 +62,85 @@
 
                 <div class="mb-2">
                     <label for="password" class="block text-[13px] font-medium text-gray-600 mb-1.5">Password</label>
-                    <input type="password" id="password" name="password" required
-                           class="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm text-[#1a1a2e] placeholder-gray-300 focus:outline-none focus:border-[#1a1a2e] transition"
-                           placeholder="••••••••" />
+                    <div class="relative">
+                        <input type="password" id="password" name="password" required
+                               class="w-full px-3.5 py-2.5 pr-10 border border-gray-200 rounded-lg text-sm text-[#1a1a2e] placeholder-gray-300 focus:outline-none focus:border-[#1a1a2e] transition"
+                               placeholder="••••••••" />
+                        <button type="button" id="togglePassword" 
+                                class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-[#1a1a2e] transition" 
+                                aria-label="Show password">
+                            {{-- Eye (password tersembunyi) --}}
+                            <svg id="iconEye" xmlns="http://www.w3.org/2000/svg" class="w-4.5 h-4.5" viewBox="0 0 24 24" 
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            {{-- Eye-off (password terlihat) --}}
+                            <svg id="iconEyeOff" xmlns="http://www.w3.org/2000/svg" class="w-4.5 h-4.5 hidden" viewBox="0 0 24 24" 
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                                <line x1="2" y1="2" x2="22" y2="22"/>
+                            </svg>
+                        </button>
+                    </div>
                     @error('password')
                         <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <div class="flex justify-end mb-5">
+                <div class="flex items-center justify-between mb-5">
+                    <label for="remember" class="inline-flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
+                        <input id="remember" name="remember" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-[#1a1a2e] focus:ring-[#1a1a2e]">
+                        Remember me
+                    </label>
                     <a href="" class="text-xs text-gray-400 hover:text-[#1a1a2e] transition">
-                        Lupa kata sandi?
+                        Forgot password?
                     </a>
                 </div>
 
                 <button type="submit"
                         class="w-full py-3 bg-[#1a1a2e] text-white rounded-lg text-[15px] font-medium hover:bg-[#2d2d4a] transition tracking-wide">
-                    signin
+                    Sign in
                 </button>
             </form>
 
             <p class="text-center text-sm text-gray-400 mt-6">
-                Belum punya akun?
-                <a href="{{route('signup')}}" class="text-[#1a1a2e] font-medium hover:underline">Signup now</a>
+                Don’t have an account?
+                <a href="{{route('signup')}}" class="text-[#1a1a2e] font-medium hover:underline">Sign up now</a>
             </p>
 
             <p class="text-center text-[11px] text-gray-300 mt-7 leading-relaxed">
-                Dengan masuk, kamu menyetujui
-                <a href="/terms" class="text-gray-400 hover:underline">Syarat & Ketentuan</a>
-                dan <a href="/privacy" class="text-gray-400 hover:underline">Kebijakan Privasi</a> Ujung Kalimat.
+                By signing in, you agree to the
+                <a href="/terms" class="text-gray-400 hover:underline">Terms & Conditions</a>
+                and <a href="/privacy" class="text-gray-400 hover:underline">Privacy Policy</a> of Ujung Kalimat.
             </p>
 
         </div>
     </main>
+
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const passwordInput = document.getElementById('password');
+                const toggleButton  = document.getElementById('togglePassword');
+                const iconEye       = document.getElementById('iconEye');
+                const iconEyeOff    = document.getElementById('iconEyeOff');
+
+                if (!passwordInput || !toggleButton) return;
+
+                toggleButton.addEventListener('click', function () {
+                    const isPassword = passwordInput.type === 'password';
+
+                    passwordInput.type = isPassword ? 'text' : 'password';
+
+                    iconEye.classList.toggle('hidden', isPassword);
+                    iconEyeOff.classList.toggle('hidden', !isPassword);
+
+                    toggleButton.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+                });
+            });
+        </script>
+    @endpush
     
 @endsection

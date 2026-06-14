@@ -10,10 +10,10 @@
         <div class="w-full max-w-sm">
 
             <h1 class="font-serif text-3xl font-bold text-[#1a1a2e] text-center leading-tight mb-1.5">
-                Mulai menulis.
+                Start writing.
             </h1>
             <p class="text-sm text-gray-400 text-center mb-8">
-                Buat akun dan temukan titikmu di ujung kalimat.
+                Create an account and find your voice at the end of the sentence.
             </p>
 
             {{-- Google --}}
@@ -25,7 +25,7 @@
                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                 </svg>
-                Daftar dengan Google
+                Sign up with Google
             </a>
 
             {{-- Facebook --}}
@@ -34,13 +34,13 @@
                 <svg class="w-5 h-5" viewBox="0 0 24 24">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" fill="#1877F2"/>
                 </svg>
-                Daftar dengan Facebook
+                Sign up with Facebook
             </a>
 
             {{-- Divider --}}
             <div class="flex items-center gap-3 mb-5">
                 <div class="flex-1 h-px bg-gray-200"></div>
-                <span class="text-xs text-gray-300">atau isi form</span>
+                <span class="text-xs text-gray-300">or fill in the form</span>
                 <div class="flex-1 h-px bg-gray-200"></div>
             </div>
 
@@ -49,25 +49,14 @@
                 @csrf
 
                 {{-- Nama --}}
-                <div class="grid grid-cols-2 gap-3 mb-4">
-                    <div>
-                        <label for="first_name" class="block text-[13px] font-medium text-gray-600 mb-1.5">Nama depan</label>
-                        <input type="text" id="first_name" name="first_name" value="{{ old('first_name') }}" required
-                               class="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm text-[#1a1a2e] placeholder-gray-300 focus:outline-none focus:border-[#1a1a2e] transition"
-                               placeholder="Rizky" />
-                        @error('first_name')
-                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <div>
-                        <label for="last_name" class="block text-[13px] font-medium text-gray-600 mb-1.5">Nama belakang</label>
-                        <input type="text" id="last_name" name="last_name" value="{{ old('last_name') }}" required
-                               class="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm text-[#1a1a2e] placeholder-gray-300 focus:outline-none focus:border-[#1a1a2e] transition"
-                               placeholder="Saria" />
-                        @error('last_name')
-                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                <div class="mb-4">
+                    <label for="name" class="block text-[13px] font-medium text-gray-600 mb-1.5">Name</label>
+                    <input type="text" id="name" name="name" value="{{ old('name') }}" required
+                            class="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm text-[#1a1a2e] placeholder-gray-300 focus:outline-none focus:border-[#1a1a2e] transition"
+                            placeholder="John" />
+                    @error('first_name')
+                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 {{-- Username --}}
@@ -98,7 +87,7 @@
                     <input type="password" id="password" name="password" required
                            class="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm text-[#1a1a2e] placeholder-gray-300 focus:outline-none focus:border-[#1a1a2e] transition"
                            placeholder="••••••••" />
-                    <p class="text-[11px] text-gray-300 mt-1">Minimal 8 karakter</p>
+                    <p class="text-[11px] text-gray-300 mt-1">Minimum 8 characters</p>
                     @error('password')
                         <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                     @enderror
@@ -106,7 +95,7 @@
 
                 {{-- Konfirmasi Password --}}
                 <div class="mb-2">
-                    <label for="password_confirmation" class="block text-[13px] font-medium text-gray-600 mb-1.5">Konfirmasi kata sandi</label>
+                    <label for="password_confirmation" class="block text-[13px] font-medium text-gray-600 mb-1.5">Confirm password</label>
                     <input type="password" id="password_confirmation" name="password_confirmation" required
                            class="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm text-[#1a1a2e] placeholder-gray-300 focus:outline-none focus:border-[#1a1a2e] transition"
                            placeholder="••••••••" />
@@ -114,19 +103,19 @@
 
                 <button type="submit"
                         class="w-full mt-3 py-3 bg-[#1a1a2e] text-white rounded-lg text-[15px] font-medium hover:bg-[#2d2d4a] transition tracking-wide">
-                    Buat Akun
+                    Create Account
                 </button>
             </form>
 
             <p class="text-center text-sm text-gray-400 mt-6">
-                Sudah punya akun?
-                <a href="{{ route('signin') }}" class="text-[#1a1a2e] font-medium hover:underline">Masuk sekarang</a>
+                Already have an account?
+                <a href="{{ route('signin') }}" class="text-[#1a1a2e] font-medium hover:underline">Sign in now</a>
             </p>
 
             <p class="text-center text-[11px] text-gray-300 mt-7 leading-relaxed">
-                Dengan mendaftar, kamu menyetujui
-                <a href="/terms" class="text-gray-400 hover:underline">Syarat & Ketentuan</a>
-                dan <a href="/privacy" class="text-gray-400 hover:underline">Kebijakan Privasi</a> Ujung Kalimat.
+                By signing up, you agree to the
+                <a href="/terms" class="text-gray-400 hover:underline">Terms & Conditions</a>
+                and <a href="/privacy" class="text-gray-400 hover:underline">Privacy Policy</a> of Ujung Kalimat.
             </p>
 
         </div>

@@ -132,16 +132,20 @@
             </a>
 
             
-             <a href="#"
-               class="flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors mt-1"
-               :class="open ? '' : 'justify-center'"
-            >
-                <i class="ti ti-logout text-lg shrink-0"></i>
-                <span x-show="open" 
-                    x-transition:enter="transition ease-out duration-200 delay-200"
-                    x-transition:enter-start="opacity-0"
-                    x-transition:enter-end="opacity-100">Logout</span>
-            </a>
+            <form action="{{ route('logout') }}" method="POST" class="cursor-pointer flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors mt-1"
+               :class="open ? '' : 'justify-center'">
+                @csrf
+                <button type="submit" class="flex items-center gap-3 w-full text-left">
+                    <i class="ti ti-logout text-lg shrink-0"></i>
+                    <span x-show="open"
+                        x-transition:enter="transition ease-out duration-200 delay-200"
+                        x-transition:enter-start="opacity-0"
+                        x-transition:enter-end="opacity-100"
+                        class="cursor-pointer">
+                        Logout
+                    </span>
+                </button>
+            </form>
         </div>
 
     </aside>

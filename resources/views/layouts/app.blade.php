@@ -18,5 +18,6 @@
     @include('partials.footer')
 
     <script src="{{ asset('js/search.js')}}"></script>
+    @stack('scripts')
 </body>
 </html>

@@ -14,5 +14,6 @@
     @include('pages.pageWorkspace.sidebar')
     @yield('content')
 
+    @stack('scripts')
 </body>
 </html>

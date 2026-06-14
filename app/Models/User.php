@@ -17,6 +17,12 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    protected $fillable = [
+        'name',
+        'email',
+        'username',
+        'password'
+    ];
     /**
      * Get the attributes that should be cast.
      *
@@ -30,6 +36,14 @@ class User extends Authenticatable
         ];
     }
 
+
+    protected static function booted()
+    {
+        static::creating(function(User $user){
+            $user->role = 'user';
+        });
+    }
+    
 
     public function article(){
         return $this->hasMany(Article::class);

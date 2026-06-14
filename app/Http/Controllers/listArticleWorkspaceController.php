@@ -10,7 +10,7 @@ class listArticleWorkspaceController extends Controller
 {
 
     public function index(Request $request){
-        $query = Article::query();
+        $query = Article::query()->where('user_id', Auth::user()->id);
         if($request->filled('search')){
             $searchTerm = $request->search;
 
