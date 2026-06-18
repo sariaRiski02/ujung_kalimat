@@ -36,9 +36,21 @@ Route::middleware('auth')->group(function(){
 Route::get('/article/{article:slug}', [IndexController::class, 'show'])->name('article.show');
 Route::get('/', [IndexController::class, 'index'])->name('welcome');
 
+Route::view('/terms', 'pages.terms')->name('terms');
+Route::view('/privacy', 'pages.privacy')->name('privacy');
+
 Route::middleware('guest')->group(function(){
     Route::get('/signin', [AuthController::class, 'signinView'])->name('signin');
     Route::post('/signin', [AuthController::class, 'signin'])->name('signin.post');
     Route::get('/signup', [AuthController::class, 'signupView'])->name('signup');
     Route::post('/signup', [AuthController::class, 'signup'])->name('signup.post');
+
+    // Google Auth
+    Route::get('/auth/google/', [AuthController::class, 'google'])->name('auth.google');
+    Route::get('/auth/google/callback',[AuthController::class, 'googleCallback']);
+
+
+    // Facebook Auth
+    Route::get('/auth/facebook', [AuthController::class, 'facebook'])->name('auth.facebook');
+    Route::get('/auth/facebook/callback', [AuthController::class, 'facebookCallback']);
 });

@@ -31,14 +31,11 @@ class listArticleWorkspaceController extends Controller
                     $q->orWhere('is_premium', $premiumValue);
                 }
             });
-
-            
         }
-
+        
         $totalArticles = (clone $query)->count();
         $draftCount = (clone $query)->where('status', 'draft')->count();
         $publishedCount = (clone $query)->where('status', 'published')->count();
-
 
         if($request->filter == 'draft'){
             $query->where('status', 'draft');

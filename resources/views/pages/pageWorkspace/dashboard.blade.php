@@ -10,7 +10,7 @@
         {{-- Page header --}}
         <div class="mb-8">
             <h1 class="text-2xl font-bold text-gray-900 font-serif">Dashboard</h1>
-            <p class="text-sm text-gray-500 mt-1">Welcome Back, Lamda</p>
+            <p class="text-sm text-gray-500 mt-1">Welcome Back, {{ auth()->user()->name }} </p>
         </div>
 
         <!-- Stats -->

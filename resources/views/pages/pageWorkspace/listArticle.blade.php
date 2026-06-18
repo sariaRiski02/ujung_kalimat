@@ -1,7 +1,7 @@
 @extends('layouts.workspace')
 
 @section('content')
-<main class="min-h-screen transition-all duration-300 p-4 sm:p-8 bg-gray-50" :class="open ? 'ml-56' : 'ml-14'">
+<main class="min-h-screen transition-all duration-300 p-4 sm:p-8 bg-gray-50" :class="open ? 'ml-56' : 'ml-14'" x-data="{ openDeleteModal: false, deleteFormAction: '', deleteArticleTitle: '' }">
     <div class="max-w-6xl mx-auto">
 
         {{-- Header --}}
@@ -165,15 +165,12 @@
                                         title="Statistik">
                                         <i class="ti ti-chart-bar"></i>
                                     </a>
-                                    <form method="POST" action="{{route('workspace.article.delete', $article->slug)}}"
-                                        onsubmit="return confirm('Hapus artikel ini?')" class="inline">
-                                        @csrf @method('DELETE')
-                                        <button type="submit"
-                                            class="p-2 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition"
-                                            title="Hapus">
-                                            <i class="ti ti-trash"></i>
-                                        </button>
-                                    </form>
+                                    <button type="button"
+                                        @click="deleteFormAction='{{ route('workspace.article.delete', $article->slug) }}'; deleteArticleTitle='{{ addslashes($article->title) }}'; openDeleteModal = true"
+                                        class="p-2 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition"
+                                        title="Hapus">
+                                        <i class="ti ti-trash"></i>
+                                    </button>
                                 </div>
                             </td>
 
@@ -190,6 +187,31 @@
                 </table>
             </div>
         </div>
+
+        {{-- Delete Confirmation Modal --}}
+        <div x-show="openDeleteModal" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4" style="display: none;">
+            <div @click.away="openDeleteModal = false" class="w-full max-w-md rounded-3xl border border-gray-200 bg-white p-6 shadow-2xl">
+                <div class="flex items-start gap-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-500">
+                        <i class="ti ti-trash text-xl"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h3 class="text-xl font-semibold text-gray-900">Delete this article?</h3>
+                        <p class="text-sm text-gray-500">You are about to delete <span class="font-semibold text-gray-700" x-text="deleteArticleTitle || 'this article'"></span>. This action cannot be undone.</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex items-center justify-end gap-3">
+                    <button type="button" @click="openDeleteModal = false" class="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition">Cancel</button>
+                    <button type="button" @click="$refs.deleteForm.submit(); openDeleteModal = false" class="rounded-full bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600 transition shadow-sm">Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <form x-ref="deleteForm" :action="deleteFormAction" method="POST" class="hidden">
+            @csrf
+            @method('DELETE')
+        </form>
 
         {{-- Notif Success --}}
         @session('success')

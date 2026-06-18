@@ -94,34 +94,40 @@
                 <i class="ti ti-edit text-[18px]" aria-hidden="true"></i>
                 <span class="text-sm md:inline hidden">Write</span>
             </a>
+            @auth
 
-            {{-- Notification button --}}
-            <div x-data="{ notificationOpen: false }">
-                <button @click="notificationOpen = !notificationOpen" type="button" class="relative hidden md:flex lg:flex items-center justify-center w-9 h-9 rounded-full text-gray-500 hover:text-black hover:bg-gray-100 transition" aria-label="Notifications">
-                    <i class="ti ti-bell text-[20px]" aria-hidden="true"></i>
-                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-[1.5px] border-white"></span>
-                </button>
+                {{-- Notification button --}}
+                <div x-data="{ notificationOpen: false }">
+                    <button @click="notificationOpen = !notificationOpen" type="button" class="relative hidden md:flex lg:flex items-center justify-center w-9 h-9 rounded-full text-gray-500 hover:text-black hover:bg-gray-100 transition" aria-label="Notifications">
+                        <i class="ti ti-bell text-[20px]" aria-hidden="true"></i>
+                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-[1.5px] border-white"></span>
+                    </button>
 
-                <div
-                    x-show="notificationOpen"
-                    @click.away="notificationOpen = false"
-                    x-transition
-                    class="absolute top-full right-0 mt-2 w-56 bg-white rounded-3xl border border-gray-200 shadow-xl p-4 z-50"
-                >
-                    <p class="text-sm text-gray-400">Belum ada notifikasi</p>
+                    <div
+                        x-show="notificationOpen"
+                        @click.away="notificationOpen = false"
+                        x-transition
+                        class="absolute top-full right-0 mt-2 w-56 bg-white rounded-3xl border border-gray-200 shadow-xl p-4 z-50"
+                    >
+                        <p class="text-sm text-gray-400">Belum ada notifikasi</p>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Workspace -->
-            <a href="{{ route('workspace.dashboard') }}" class=" hidden md:flex lg:flex items-center justify-center w-9 h-9 rounded-full text-gray-500 hover:text-black hover:bg-gray-100 transition" aria-label="Workspace">
-                <i class="ti ti-layout-dashboard text-[24px]"></i>
-            </a>
+                <!-- Workspace -->
+                <a href="{{ route('workspace.dashboard') }}" class=" hidden md:flex lg:flex items-center justify-center w-9 h-9 rounded-full text-gray-500 hover:text-black hover:bg-gray-100 transition" aria-label="Workspace">
+                    <i class="ti ti-layout-dashboard text-[24px]"></i>
+                </a>
 
+            @endauth
+            
+                
+            @guest
+                <a href="{{ route('signin') }}"
+                class="bg-black text-white px-4 border py-2 rounded-full text-sm hover:bg-gray-800 transition">
+                    signin
+                </a>
+            @endguest
             {{-- login --}}
-            {{-- <a href="#"
-               class="bg-black text-white px-4 border py-2 rounded-full text-sm hover:bg-gray-800 transition">
-                Login
-            </a> --}}
 
             {{-- navigation on phone --}}
             <div x-data="{ mobileMenuOpen: false }">

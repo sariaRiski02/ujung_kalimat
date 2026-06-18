@@ -17,7 +17,7 @@
                 {{-- Toggle Premium --}}
                 <button
                     type="button"
-                    x-data="{ premium: true }"
+                    x-data="{ premium: false }"
                     @click="premium = !premium"
                     class="flex items-center gap-2 bg-gray-100 border border-gray-200 rounded-full px-4 py-1.5 text-sm font-medium cursor-pointer"
                     :class="premium ? 'text-amber-600' : 'text-gray-500'"

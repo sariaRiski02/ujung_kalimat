@@ -19,7 +19,7 @@
             </p>
 
             {{-- Google --}}
-            <a href=""
+            <a href="{{ route('auth.google') }}"
                class="flex items-center justify-center gap-2.5 w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-sm font-medium text-[#1a1a2e] hover:border-gray-400 hover:bg-gray-50 transition mb-3 no-underline">
                 <svg class="w-5 h-5" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -31,7 +31,7 @@
             </a>
 
             {{-- Facebook --}}
-            <a href=""
+            <a href="{{ route('auth.facebook') }}"
                class="flex items-center justify-center gap-2.5 w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-sm font-medium text-[#1a1a2e] hover:border-gray-400 hover:bg-gray-50 transition mb-5 no-underline">
                 <svg class="w-5 h-5" viewBox="0 0 24 24">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" fill="#1877F2"/>
@@ -112,12 +112,31 @@
 
             <p class="text-center text-[11px] text-gray-300 mt-7 leading-relaxed">
                 By signing in, you agree to the
-                <a href="/terms" class="text-gray-400 hover:underline">Terms & Conditions</a>
-                and <a href="/privacy" class="text-gray-400 hover:underline">Privacy Policy</a> of Ujung Kalimat.
+                <a href="{{ route('terms') }}" class="text-gray-400 hover:underline">Terms & Conditions</a>
+                and <a href="{{ route('privacy') }}" class="text-gray-400 hover:underline">Privacy Policy</a> of Ujung Kalimat.
             </p>
 
         </div>
     </main>
+
+    @if(session('error'))
+        <div id="errorModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6">
+            <div class="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl border border-gray-200">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <h2 class="text-lg font-semibold text-[#1a1a2e]">There is something wrong</h2>
+                        <p class="mt-2 text-sm text-gray-600">{{ session('error') }}</p>
+                    </div>
+                    <button id="closeErrorModal" type="button" class="rounded-full p-2 text-gray-400 hover:text-[#1a1a2e] transition" aria-label="Tutup notifikasi">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
 
     @push('scripts')
         <script>
@@ -126,6 +145,14 @@
                 const toggleButton  = document.getElementById('togglePassword');
                 const iconEye       = document.getElementById('iconEye');
                 const iconEyeOff    = document.getElementById('iconEyeOff');
+                const errorModal    = document.getElementById('errorModal');
+                const closeErrorModal = document.getElementById('closeErrorModal');
+
+                if (errorModal && closeErrorModal) {
+                    closeErrorModal.addEventListener('click', function () {
+                        errorModal.remove();
+                    });
+                }
 
                 if (!passwordInput || !toggleButton) return;
 
