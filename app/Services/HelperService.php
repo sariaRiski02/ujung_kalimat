@@ -39,5 +39,23 @@ class HelperService
 
         return $result;
     }
+
+
+    public function getContent(string $content, float $percentage){
+        $arrayContent = $this->extractTagContent($content);
+        $contentPercentage = round(count($arrayContent) * ($percentage/100));
+
+        $result = array_slice($arrayContent,0 , (int)$contentPercentage);
+        $arrayTemp = array_map(function($item){
+            if($item['tag'] == 'p'){
+                return '<p>' . $item['text'] . '</p>';
+            }else{
+                return '<blockqoute>' . $item['text'] . '</blockqoute>';
+            }
+        },$result);
+
+        return implode($arrayTemp);
+        
+    }
     
 }

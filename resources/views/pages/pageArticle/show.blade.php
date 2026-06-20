@@ -83,7 +83,50 @@
         
         {!!$article->content!!}
 
+        
     </article>
+
+   
+
+    @if (!auth()->user()?->isSubscriber())
+            {{-- ====== PAYWALL OVERLAY (STATIC) ====== --}}
+        <div class="relative -mt-40 md:-mt-48">
+
+            {{-- Gradient fade menutupi bagian bawah konten --}}
+            <div class="absolute inset-x-0 bottom-0 h-72 md:h-80 bg-gradient-to-t from-white via-white to-transparent pointer-events-none"></div>
+
+            {{-- Lock card --}}
+            <div class="relative pt-20 pb-10 text-center font-sans">
+                <div class="w-12 h-12 rounded-full bg-gray-900 flex items-center justify-center mx-auto mb-5">
+                    <i class="ti ti-lock text-white text-xl"></i>
+                </div>
+
+                <h3 class="text-2xl font-bold text-gray-900 mb-2 font-serif">
+                    Continue reading this article
+                </h3>
+                <p class="text-gray-500 text-sm mb-6 max-w-sm mx-auto">
+                    This article is for members only. Subscribe to unlock full access to premium content.
+                </p>
+
+                <div class="flex items-center justify-center gap-3">
+                    
+                    <a href="#"
+                    class="bg-gray-900 text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-gray-800 transition-colors">
+                        Subscribe Now
+                    </a>
+                    @guest
+                        <a href="{{ route('signin') }}"
+                        class="text-gray-700 text-sm font-medium px-6 py-2.5 rounded-full border border-gray-300 hover:bg-gray-50 transition-colors">
+                            Sign In
+                        </a>
+                    @endguest
+                </div>
+            </div>
+        </div>
+        {{-- ====== END PAYWALL OVERLAY ====== --}}    
+    @endif
+
+    
 
     
     

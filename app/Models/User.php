@@ -10,19 +10,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'username', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
-
-    protected $fillable = [
-        'name',
-        'email',
-        'username',
-        'password'
-    ];
     /**
      * Get the attributes that should be cast.
      *
@@ -36,7 +29,6 @@ class User extends Authenticatable
         ];
     }
 
-
     protected static function booted()
     {
         static::creating(function(User $user){
@@ -45,7 +37,22 @@ class User extends Authenticatable
     }
     
 
+    public function isSubscriber(){
+        if($this->subscription->isEmpty()){
+            return false;
+        }
+        return $this->subscription
+                ->sortByDesc('created_at')
+                ->first()?->isActive() ?? false;
+        
+    }
+
     public function article(){
         return $this->hasMany(Article::class);
+    }
+
+
+    public function subscription(){
+        return $this->hasMany(Subscriptions::class);
     }
 }
