@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SocialAccount;
 use App\Models\User;
 use Exception;
 use Illuminate\Database\QueryException;
@@ -75,8 +76,11 @@ class AuthController extends Controller
         
         try {
             $googleUser = Socialite::driver('google')->user();
+            
 
             $user = User::where('email', $googleUser->email)->first();
+            
+            
             if(!$user){
                 $user = User::create([
                     'name' => $googleUser->name,
@@ -86,7 +90,12 @@ class AuthController extends Controller
                 ]);
             }
 
+            SocialAccount::updateOrCreate(
+                ['provider_name' => 'google', 'provider_id' => $googleUser->id],
+                ['user_id' => $user->id]
+            );
             
+
             Auth::login($user);
 
             return redirect()->intendend(route('workspace.dashboard'));
@@ -95,32 +104,6 @@ class AuthController extends Controller
         }
     }
 
-    public function facebook(){
-        return Socialite::driver('facebook')->redirect();
-    }
-
-    public function facebookCallback(){
-        try {
-            $facebookUser = Socialite::driver('facebook')->user();
-
-            $user = User::where('email', $facebookUser->email)->first();
-            if(!$user){
-                $user = User::create([
-                    'name' => $facebookUser->name,
-                    'username'=> $facebookUser->name,
-                    'email' => $facebookUser->email,
-                    'password' => bcrypt(Str::random(16))
-                ]);
-            }
-
-            
-            Auth::login($user);
-
-            return redirect()->intendend(route('workspace.dashboard'));
-        } catch (Exception $e) {
-            return redirect()->route('signin')->with('error', 'cant login with facebook, please try again' . $e);
-        }
-    }
 
     public function logout(Request $request){
         
