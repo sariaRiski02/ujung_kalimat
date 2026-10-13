@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
@@ -17,9 +16,11 @@ class OtpMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public string $otp_code;
+
+    public function __construct(string $otp_code)
     {
-        //
+        $this->otp_code = $otp_code;
     }
 
     /**
@@ -37,8 +38,11 @@ class OtpMail extends Mailable
      */
     public function content(): Content
     {
+        $otp_code = $this->otp_code;
+
         return new Content(
             view: 'mail.otp',
+            with: compact('otp_code')
         );
     }
 

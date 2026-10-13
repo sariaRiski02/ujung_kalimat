@@ -34,7 +34,7 @@
                 </p>
 
                 <p class="mt-3 text-3xl font-bold tracking-[0.4em] text-gray-900">
-                    045323
+                    {{ $otp_code }}
                 </p>
             </div>
 
