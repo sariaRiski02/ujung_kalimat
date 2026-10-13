@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OtpMail;
 use App\Models\SocialAccount;
 use App\Models\User;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Socialite;
 
@@ -38,35 +41,6 @@ class AuthController extends Controller
         ])->onlyInput('email');
     }
 
-    public function signup(Request $request){
-        $data = $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|email|max:255|unique:users,email',
-            'username' => 'required|string',
-            'password' => 'required|string|min:4|confirmed|max:255'
-        ]);
-
-        try {
-            $user = User::create([
-                'name' => $data['name'],
-                'username' => $data['username'],
-                'email' => $data['email'],
-                'password' => $data['password'],
-            ]);
-            Auth::login($user);
-            $request->session()->regenerate();
-        } catch (QueryException $e) {
-            return back()->withErrors([
-                'email' => "Registration can't be proccess"
-            ]);
-        }
-
-        return redirect()->route('workspace.dashboard');
-        
-
-        
-    }
-
 
     public function google(){
         return Socialite::driver('google')->redirect();
@@ -78,27 +52,20 @@ class AuthController extends Controller
             $googleUser = Socialite::driver('google')->user();
             
 
-            $user = User::where('email', $googleUser->email)->first();
-            
+            $user = User::query()->where('email', $googleUser->email)->first();
             
             if(!$user){
                 $user = User::create([
                     'name' => $googleUser->name,
                     'username'=> $googleUser->name,
                     'email' => $googleUser->email,
+                    'profile_photo_path' => $googleUser->avatar,
                     'password' => bcrypt(Str::random(16))
                 ]);
             }
-
-            SocialAccount::updateOrCreate(
-                ['provider_name' => 'google', 'provider_id' => $googleUser->id],
-                ['user_id' => $user->id]
-            );
-            
-
             Auth::login($user);
 
-            return redirect()->intendend(route('workspace.dashboard'));
+            return redirect()->intended(route('workspace.dashboard'));
         } catch (Exception $e) {
             return redirect()->route('signin')->with('error', 'cant login with google, please try again' . $e);
         }

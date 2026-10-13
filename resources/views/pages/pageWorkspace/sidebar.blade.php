@@ -124,7 +124,7 @@
                class="flex items-center gap-3 px-2 py-2 rounded-lg text-sm {{ request()->routeIs('workspace.profile') ? 'text-gray-900 bg-gray-100' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900' }} transition-colors"
                :class="open ? '' : 'justify-center'"
             >
-                <img src="https://i.pravatar.cc/80?img=12" class="w-6 h-6 rounded-full shrink-0 object-cover" alt="">
+                <img src="{{ auth()->user()->profile_photo_path }}" class="w-6 h-6 rounded-full shrink-0 object-cover" alt="">
                 <span x-show="open" 
                     x-transition:enter="transition ease-out duration-200 delay-200"
                     x-transition:enter-start="opacity-0"

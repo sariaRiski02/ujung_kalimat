@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\listArticleWorkspaceController;
 use App\Http\Controllers\workspaceController;
+use App\Mail\OtpMail;
 use Illuminate\Support\Facades\Route;
 
 
@@ -43,10 +44,12 @@ Route::middleware('guest')->group(function(){
     Route::get('/signin', [AuthController::class, 'signinView'])->name('signin');
     Route::post('/signin', [AuthController::class, 'signin'])->name('signin.post');
     Route::get('/signup', [AuthController::class, 'signupView'])->name('signup');
-    Route::post('/signup', [AuthController::class, 'signup'])->name('signup.post');
-
     // Google Auth
     Route::get('/auth/google/', [AuthController::class, 'google'])->name('auth.google');
     Route::get('/auth/google/callback',[AuthController::class, 'googleCallback']);
 
+});
+
+Route::get('/otp', function(){
+    return new OtpMail();
 });

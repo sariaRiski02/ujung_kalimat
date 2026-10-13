@@ -17,7 +17,7 @@
             </p>
 
             {{-- Google --}}
-            <a href=""
+            <a href="{{ route('auth.google') }}"
                class="flex items-center justify-center gap-2.5 w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-sm font-medium text-[#1a1a2e] hover:border-gray-400 hover:bg-gray-50 transition mb-3 no-underline">
                 <svg class="w-5 h-5" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -28,14 +28,6 @@
                 Sign up with Google
             </a>
 
-            {{-- Facebook --}}
-            <a href=""
-               class="flex items-center justify-center gap-2.5 w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-sm font-medium text-[#1a1a2e] hover:border-gray-400 hover:bg-gray-50 transition mb-5 no-underline">
-                <svg class="w-5 h-5" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" fill="#1877F2"/>
-                </svg>
-                Sign up with Facebook
-            </a>
 
             {{-- Divider --}}
             <div class="flex items-center gap-3 mb-5">
@@ -44,68 +36,13 @@
                 <div class="flex-1 h-px bg-gray-200"></div>
             </div>
 
-            {{-- Form --}}
-            <form method="POST" action="{{ route('signup') }}">
-                @csrf
-
-                {{-- Nama --}}
-                <div class="mb-4">
-                    <label for="name" class="block text-[13px] font-medium text-gray-600 mb-1.5">Name</label>
-                    <input type="text" id="name" name="name" value="{{ old('name') }}" required
-                            class="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm text-[#1a1a2e] placeholder-gray-300 focus:outline-none focus:border-[#1a1a2e] transition"
-                            placeholder="John" />
-                    @error('first_name')
-                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                    @enderror
+            @if (session()->has('registration_error'))
+                <div class="text-red-500">
+                    {{ session('registration_error') }}
                 </div>
+            @endif
 
-                {{-- Username --}}
-                <div class="mb-4">
-                    <label for="username" class="block text-[13px] font-medium text-gray-600 mb-1.5">Username</label>
-                    <input type="text" id="username" name="username" value="{{ old('username') }}" required
-                           class="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm text-[#1a1a2e] placeholder-gray-300 focus:outline-none focus:border-[#1a1a2e] transition"
-                           placeholder="@ujungkalimat" />
-                    @error('username')
-                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                {{-- Email --}}
-                <div class="mb-4">
-                    <label for="email" class="block text-[13px] font-medium text-gray-600 mb-1.5">Email</label>
-                    <input type="email" id="email" name="email" value="{{ old('email') }}" required
-                           class="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm text-[#1a1a2e] placeholder-gray-300 focus:outline-none focus:border-[#1a1a2e] transition"
-                           placeholder="nama@email.com" />
-                    @error('email')
-                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                {{-- Password --}}
-                <div class="mb-4">
-                    <label for="password" class="block text-[13px] font-medium text-gray-600 mb-1.5">Password</label>
-                    <input type="password" id="password" name="password" required
-                           class="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm text-[#1a1a2e] placeholder-gray-300 focus:outline-none focus:border-[#1a1a2e] transition"
-                           placeholder="••••••••" />
-                    <p class="text-[11px] text-gray-300 mt-1">Minimum 8 characters</p>
-                    @error('password')
-                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                {{-- Konfirmasi Password --}}
-                <div class="mb-2">
-                    <label for="password_confirmation" class="block text-[13px] font-medium text-gray-600 mb-1.5">Confirm password</label>
-                    <input type="password" id="password_confirmation" name="password_confirmation" required
-                           class="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm text-[#1a1a2e] placeholder-gray-300 focus:outline-none focus:border-[#1a1a2e] transition"
-                           placeholder="••••••••" />
-                </div>
-
-                <button type="submit"
-                        class="w-full mt-3 py-3 bg-[#1a1a2e] text-white rounded-lg text-[15px] font-medium hover:bg-[#2d2d4a] transition tracking-wide">
-                    Create Account
-                </button>
-            </form>
+            <livewire:auth.signup />
 
             <p class="text-center text-sm text-gray-400 mt-6">
                 Already have an account?
@@ -120,7 +57,4 @@
 
         </div>
     </main>
-
-
-    
 @endsection
