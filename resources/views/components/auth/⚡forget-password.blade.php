@@ -34,12 +34,12 @@ new class extends Component
             return;
         }
             
-        $key = 'reset_password-' . hash('sha256', $email);
-        $keyAttempts = 'reset_password_attempts-' . hash('sha256', $email);
+        $limiterKey = 'reset_password-' . hash('sha256', $email);
+        $otpkey = 'reset_password_otp-' . hash('sha256', $email);
 
         
-        if(RateLimiter::tooManyAttempts($key, 1) && !Cache::has($keyAttempts)){
-            $secondsLeft = RateLimiter::availableIn($key);
+        if(RateLimiter::tooManyAttempts($limiterKey, 1)){
+            $secondsLeft = RateLimiter::availableIn($limiterKey);
             $this->errorMessage = 'Kode sudah dikirim. Kamu bisa minta kode lagi setelah waktu tunggunya habis. Tunggu ' . $secondsLeft . ' detik.';
             $this->countDown = $secondsLeft;
             return;
@@ -49,16 +49,13 @@ new class extends Component
         
         try {
             Mail::to($email)->send(new ForgetPasswordMail($otp));
-            Cache::put($key, 
+            Cache::put($otpkey, 
                     Hash::make($otp), 
                     now()->addMinutes(3)
                 ); // 3 minutes    
-            Cache::put($keyAttempts, 0, now()->addMinutes(3)); // 3 minutes for attempts
-            RateLimiter::hit($key, 180); // 3 minutes
+            RateLimiter::hit($limiterKey, 180); // 3 minutes
             $this->countDown = 180; // 3 minutes countdown for the frontend
-
             $this->successMessage = 'Kode OTP telah dikirim ke email Anda.';
-
         } catch (\Throwable $th) {
             $this->errorMessage = 'Gagal mengirim kode OTP. Silakan coba lagi.';
             return;
@@ -66,8 +63,13 @@ new class extends Component
         
     }
 
+   
+
     public function clearError(){
         $this->errorMessage = '';
+    }
+    public function clearSuccess(){
+        $this->successMessage = '';
     }
 };
 ?>
@@ -103,11 +105,6 @@ new class extends Component
 
     @if ($successMessage)
         <div
-            x-data="{ show: true }"
-            x-show="show"
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 -translate-y-2"
-            x-transition:enter-end="opacity-100 translate-y-0"
             class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 rounded-full border border-green-200 bg-green-50 px-4 py-2.5 shadow-lg"
             role="status"
         >
@@ -115,8 +112,8 @@ new class extends Component
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                 <polyline points="22 4 12 14.01 9 11.01"/>
             </svg>
-            <p class="text-xs font-medium text-green-600 whitespace-nowrap">{{ $successMessage }} Email sudah di kirim</p>
-            <button type="button" @click="show = false"
+            <p class="text-xs font-medium text-green-600 whitespace-nowrap">{{ $successMessage }}</p>
+            <button type="button" onclick="this.closest('[role=status]').remove()"
                     class="ml-1 shrink-0 rounded-full p-0.5 text-green-400 hover:text-green-600 hover:bg-green-100 transition"
                     aria-label="Tutup notifikasi">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
