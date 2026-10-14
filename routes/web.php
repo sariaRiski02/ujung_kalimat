@@ -48,8 +48,10 @@ Route::middleware('guest')->group(function(){
     Route::get('/auth/google/', [AuthController::class, 'google'])->name('auth.google');
     Route::get('/auth/google/callback',[AuthController::class, 'googleCallback']);
 
+    Route::get('/forget-password', [AuthController::class, 'forgotPasswordView'])->name('forget-password');
 });
 
-Route::get('/otp', function(){
-    return new OtpMail();
-});
+
+// test view email
+Route::view('/mail-forget-password', 'mail.otp-forget-password')->name('mail.forget-password');
+

@@ -28,17 +28,19 @@ class AuthController extends Controller
 
         $credentials =  $request->validate([
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required|min:6'
         ]);
-
         if(Auth::attempt($credentials, $request->boolean('remember'))){
             $request->session()->regenerate();
             return redirect()->intended(route('workspace.dashboard'));
         }
-
         return back()->withErrors([
-            'email' => 'The email or password is incorrect.'
+            'error' => 'The email or password is incorrect.'
         ])->onlyInput('email');
+    }
+
+    public function forgotPasswordView(){
+        return view('pages.auth.forget-password');
     }
 
 
@@ -67,7 +69,7 @@ class AuthController extends Controller
 
             return redirect()->intended(route('workspace.dashboard'));
         } catch (Exception $e) {
-            return redirect()->route('signin')->with('error', 'cant login with google, please try again' . $e);
+            return redirect()->route('signin')->with('error', 'cant login with google, please try again');
         }
     }
 

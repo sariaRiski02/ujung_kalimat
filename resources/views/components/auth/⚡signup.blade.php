@@ -38,7 +38,7 @@ new class extends Component
 
         $email = trim($this->email);
 
-        $key = 'registration-otp' . hash('sha256', $email);
+        $key = 'registration-otp-' . hash('sha256', $email);
         $otpKeyhashed = Cache::get($key);
 
         if (!$otpKeyhashed || !Hash::check($this->otp_code, $otpKeyhashed)) {
@@ -74,7 +74,7 @@ new class extends Component
 
         $email = trim($this->email);
 
-        $key = 'registration-otp' . hash('sha256', $email);
+        $key = 'registration-otp-' . hash('sha256', $email);
         
         
         if(RateLimiter::tooManyAttempts($key, 3)){
@@ -82,7 +82,7 @@ new class extends Component
             return;
         }
 
-        Ratelimiter::hit($key, 600); // 600 seconds = 10 minutes
+        RateLimiter::hit($key, 600); // 600 seconds = 10 minutes
 
         $otp_code = (string) rand(100000, 999999);
         

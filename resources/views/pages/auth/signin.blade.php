@@ -41,6 +41,34 @@
             <form method="POST" action="{{ route('signin.post') }}">
                 @csrf
 
+                @error("error")
+                    <div x-data="{ show: true }"
+                         x-show="show"
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 -translate-y-1"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 -translate-y-1"
+                         class="mb-4 flex items-start gap-2.5 rounded-lg border border-red-100 bg-red-50 px-3.5 py-2.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-400 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        <p class="text-xs text-red-500 leading-relaxed">{{ $message }}</p>
+                        <button type="button" @click="show = false"
+                                class="ml-auto shrink-0 rounded-md p-0.5 text-red-300 hover:text-red-500 hover:bg-red-100 transition"
+                                aria-label="Tutup notifikasi">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                        </button>
+                    </div>
+                @enderror
+                
+
                 <div class="mb-4">
                     <label for="email" class="block text-[13px] font-medium text-gray-600 mb-1.5">Email</label>
                     <input type="email" id="email" name="email" value="{{ old('email') }}" required
@@ -85,7 +113,7 @@
                         <input id="remember" name="remember" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-[#1a1a2e] focus:ring-[#1a1a2e]">
                         Remember me
                     </label>
-                    <a href="" class="text-xs text-gray-400 hover:text-[#1a1a2e] transition">
+                    <a href="{{ route('forget-password') }}" class="text-xs text-gray-400 hover:text-[#1a1a2e] transition">
                         Forgot password?
                     </a>
                 </div>
@@ -136,15 +164,6 @@
                 const toggleButton  = document.getElementById('togglePassword');
                 const iconEye       = document.getElementById('iconEye');
                 const iconEyeOff    = document.getElementById('iconEyeOff');
-                const errorModal    = document.getElementById('errorModal');
-                const closeErrorModal = document.getElementById('closeErrorModal');
-
-                if (errorModal && closeErrorModal) {
-                    closeErrorModal.addEventListener('click', function () {
-                        errorModal.remove();
-                    });
-                }
-
                 if (!passwordInput || !toggleButton) return;
 
                 toggleButton.addEventListener('click', function () {
