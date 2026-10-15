@@ -16,11 +16,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/write', [workspaceController::class, 'store'])->name('workspace.write.post');
 
         Route::get('/articles', [listArticleWorkspaceController::class, 'index'])->name('workspace.articles');
-        Route::put('/article/{article:slug}/status', [listArticleWorkspaceController::class, 'status'])->name('workspace.article.status');
-        Route::put('/article/{article:slug}/type', [listArticleWorkspaceController::class, 'type'])->name('workspace.article.type');
         Route::get('/article/{article:slug}/update', [workspaceController::class, 'update'])->name('workspace.article.update');
         Route::put('/article/{article:slug}/update', [workspaceController::class, 'edit'])->name('workspace.article.edit');
-        Route::delete('/article/{article:slug}/delete', [workspaceController::class, 'delete'])->name('workspace.article.delete');
 
         Route::get('/monetization', [workspaceController::class, 'monetization'])->name('workspace.monetization');
         Route::get('/following', [workspaceController::class, 'following'])->name('workspace.following');

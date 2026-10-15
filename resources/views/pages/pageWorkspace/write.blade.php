@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <form action="{{route('workspace.write')}}" method="POST" class=" min-h-200 transition-all duration-300 p-8 items-center"
+    <form action="{{route('workspace.write.post')}}" method="POST" class=" min-h-200 transition-all duration-300 p-8 items-center"
         :class="open ? 'ml-56' : 'ml-14'" enctype="multipart/form-data">
         @csrf
         {{--  header --}}
@@ -54,32 +54,6 @@
 
         <div class="max-w-3xl px-6 mx-auto">
 
-            <div class="mb-8">
-                <label
-                    class="flex items-center justify-center w-full h-80 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 overflow-hidden">
-
-                    <input
-                        id="coverImage"
-                        type="file"
-                        name="image"
-                        accept="image/*"
-                        class="hidden">
-
-                    <img
-                        id="previewImage"
-                        class="hidden w-full h-full object-cover"
-                        alt="Preview">
-
-                    <span
-                        id="placeholderText"
-                        class="text-gray-500">
-                        Click to Upload Cover Image
-                    </span>
-
-                </label>
-
-            </div>
-            
             <!-- Title -->
             <textarea
                 rows="1"
@@ -97,7 +71,7 @@
                     font-bold
                     placeholder-gray-400
                     leading-tight
-                    mb-8
+                    mb-4
                 "
             >{{old('title')}}</textarea>
 
@@ -112,8 +86,10 @@
                 @if(count($oldContent) > 0)
 
                     @foreach($oldContent as $index => $block)
+                        @continue(($block['type'] ?? 'paragraph') === 'image')
                         <div class="story-wrapper group relative flex items-start gap-2 {{ ($block['type'] ?? 'paragraph') === 'quote' ? 'border-l-4 border-gray-300 pl-4' : '' }}" data-index="{{ $index }}">
 
+                            @include('partials.insert-menu')
                             <input type="hidden" name="content[{{ $index }}][type]" value="{{ $block['type'] ?? 'paragraph' }}" class="block-type">
 
                             <button
@@ -148,6 +124,7 @@
                 @else
 
                     <div class="story-wrapper group relative flex items-start gap-2" data-index="0">
+                        @include('partials.insert-menu')
                         <input type="hidden" name="content[0][type]" value="paragraph" class="block-type">
 
                         <button
@@ -184,6 +161,11 @@
         </div>
 
     </form>
+
+    {{-- Template for lines created by write.js --}}
+    <template id="insert-menu-template">
+        @include('partials.insert-menu')
+    </template>
 
 
     <div

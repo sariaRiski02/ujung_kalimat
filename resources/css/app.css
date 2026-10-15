@@ -20,6 +20,24 @@
     display: none !important;
 }
 
+/* Editor insert menu ("+" beside an empty, focused line) */
+.story-wrapper .insert-menu {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+.story-wrapper:focus-within:has(.story-block:placeholder-shown) .insert-menu,
+.story-wrapper .insert-menu.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+.insert-menu.is-open .insert-trigger i {
+    transform: rotate(45deg);
+}
+.insert-menu.is-open .insert-options {
+    display: flex;
+}
+
 .search-overlay {
     position: absolute;
     inset: 0;

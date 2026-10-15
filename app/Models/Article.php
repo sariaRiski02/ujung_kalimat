@@ -2,10 +2,8 @@
 
 namespace App\Models;
 
-
-use App\Models\Image;
-use App\Models\User;
 use App\Services\HelperService;
+use Database\Factories\ArticleFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,15 +13,16 @@ use Spatie\Sluggable\SlugOptions;
 
 class Article extends Model
 {
-    /** @use HasFactory<\Database\Factories\ArticleFactory> */
+    /** @use HasFactory<ArticleFactory> */
     use HasFactory;
+
     use HasSlug;
 
     protected $fillable = [
         'title',
         'content',
         'status',
-        'is_premium'
+        'is_premium',
     ];
 
     protected function cleanContent(): Attribute
@@ -36,8 +35,9 @@ class Article extends Model
     protected function arrayContent(): Attribute
     {
         $service = app(HelperService::class);
+
         return Attribute::make(
-            get: fn() => $service->extractTagContent($this->content)
+            get: fn () => $service->extractTagContent($this->content)
         );
     }
 
@@ -48,50 +48,47 @@ class Article extends Model
         );
     }
 
-    public function getSlugOptions(): SlugOptions{
+    public function getSlugOptions(): SlugOptions
+    {
         return SlugOptions::create()
             ->generateSlugsFrom('title')
             ->saveSlugsTo('slug')
             ->doNotGenerateSlugsOnUpdate();
     }
 
-    
+    /**
+     * @param  array<int, array<string, string>>  $blocks
+     */
+    protected static function renderContent(array $blocks): string
+    {
+        return implode('', array_map(fn ($item) => match ($item['type']) {
+            'paragraph' => '<p>'.$item['text'].'</p>',
+            'image' => '<img src="'.e($item['url']).'" alt="">',
+            default => '<blockquote>'.$item['text'].'</blockquote>',
+        }, $blocks));
+    }
+
     protected static function booted()
     {
-        static::creating(function(Article $article){
-            
-            $arrayTemp = array_map(function($item){
-                if($item['type'] == 'paragraph'){
-                    return '<p>' . $item['text'] . '</p>';
-                }else {
-                    return '<blockquote>' . $item['text'] . '</blockquote>';
-                }
-            },$article->content);
-            $article->content = implode('', $arrayTemp);
+        static::creating(function (Article $article) {
+
+            $article->content = static::renderContent($article->content);
         });
 
-        static::updating(function(Article $article){
+        static::updating(function (Article $article) {
 
-            if($article->isDirty('status') || $article->isDirty('is_premium')){
-                return;
+            if (is_array($article->content)) {
+                $article->content = static::renderContent($article->content);
             }
-
-            $arrayTemp = array_map(function($item){
-                if($item['type'] == 'paragraph'){
-                    return '<p>' . $item['text'] . '</p>';
-                }else {
-                    return '<blockquote>' . $item['text'] . '</blockquote>';
-                }
-            },$article->content);
-            $article->content = implode('', $arrayTemp);
         });
 
-        static::creating(function(Article $article){
+        static::creating(function (Article $article) {
             $article->user_id = Auth::user()->id ?? User::first()->id;
         });
     }
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 

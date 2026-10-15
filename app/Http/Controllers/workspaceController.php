@@ -149,7 +149,7 @@ class workspaceController extends Controller
                 ->withErrors(['current_password' => 'The password you entered is incorrect.'], 'confirmPassword');
         }
 
-        $request->session()->passwordConfirmed();
+        $request->session()->put('auth.password_confirmed_at', time());
 
         return redirect()->route('workspace.profile.reset-password');
     }
