@@ -26,6 +26,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/following', [workspaceController::class, 'following'])->name('workspace.following');
         Route::get('/followers', [workspaceController::class, 'followers'])->name('workspace.followers');
         Route::get('/profile', [workspaceController::class, 'profile'])->name('workspace.profile');
+        Route::put('/profile', [workspaceController::class, 'updateProfile'])->name('workspace.profile.update');
+        Route::post('/profile/photo', [workspaceController::class, 'updateProfilePhoto'])->name('workspace.profile.photo.update');
+        Route::delete('/profile/photo', [workspaceController::class, 'deleteProfilePhoto'])->name('workspace.profile.photo.delete');
         Route::post('/profile/confirm-password', [workspaceController::class, 'confirmPassword'])->name('workspace.profile.confirm-password');
         Route::get('/profile/confirm-password', fn () => redirect()->route('workspace.profile')->with('confirm_password', true))->name('password.confirm');
         Route::middleware('password.confirm')->group(function () {

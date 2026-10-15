@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreArticleRequest;
+use App\Http\Requests\UpdateProfileRequest;
 use App\Models\Article;
 use App\Services\ArticleService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 
 class workspaceController extends Controller
@@ -72,9 +74,58 @@ class workspaceController extends Controller
         return view('pages.pageWorkspace.followers');
     }
 
-    public function profile()
+    public function profile(Request $request)
     {
-        return view('pages.pageWorkspace.profile');
+        return view('pages.pageWorkspace.profile', [
+            'user' => $request->user(),
+            'articleCount' => $request->user()->article()->count(),
+        ]);
+    }
+
+    public function updateProfile(UpdateProfileRequest $request): RedirectResponse
+    {
+        $request->user()->update($request->safe()->only(['name', 'username', 'bio', 'city', 'country']));
+
+        return redirect()->route('workspace.profile')->with('success', 'Profil berhasil diperbarui.');
+    }
+
+    public function updateProfilePhoto(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048', 'dimensions:min_width=100,min_height=100,max_width=6000,max_height=6000'],
+        ], [
+            'photo.image' => 'File harus berupa gambar.',
+            'photo.mimes' => 'Foto harus berformat JPG, PNG, atau WEBP.',
+            'photo.max' => 'Ukuran foto maksimal 2 MB.',
+            'photo.dimensions' => 'Ukuran foto minimal 100x100 piksel.',
+            'photo.uploaded' => 'Foto gagal diunggah, pastikan ukurannya maksimal 2 MB.',
+        ]);
+
+        $user = $request->user();
+        $oldPhoto = $user->hasUploadedProfilePhoto() ? $user->profile_photo_path : null;
+
+        $user->update([
+            'profile_photo_path' => $request->file('photo')->store('profile-photos', 'public'),
+        ]);
+
+        if ($oldPhoto) {
+            Storage::disk('public')->delete($oldPhoto);
+        }
+
+        return redirect()->route('workspace.profile')->with('success', 'Foto profil berhasil diperbarui.');
+    }
+
+    public function deleteProfilePhoto(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        if ($user->hasUploadedProfilePhoto()) {
+            Storage::disk('public')->delete($user->profile_photo_path);
+        }
+
+        $user->update(['profile_photo_path' => null]);
+
+        return redirect()->route('workspace.profile')->with('success', 'Foto profil berhasil dihapus.');
     }
 
     public function analytics()

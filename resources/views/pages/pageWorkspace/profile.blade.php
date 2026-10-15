@@ -20,19 +20,59 @@
     <div class="bg-white border border-gray-200 rounded-xl p-5 mb-6">
         <div class="flex flex-col sm:flex-row gap-5 sm:items-center">
 
-            <div class="w-20 h-20 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0">
-                <span class="font-serif text-2xl font-semibold text-gray-500">Rs</span>
+            {{-- Foto profil --}}
+            <div class="flex flex-col items-center gap-2 shrink-0">
+                @if($user->profile_photo_url)
+                    <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}"
+                         class="w-20 h-20 rounded-full border border-gray-200 object-cover">
+                @else
+                    <div class="w-20 h-20 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center">
+                        <span class="font-serif text-2xl font-semibold text-gray-500">{{ $user->initials() }}</span>
+                    </div>
+                @endif
+
+                <div class="flex items-center gap-3 text-xs">
+                    <form method="POST" action="{{ route('workspace.profile.photo.update') }}" enctype="multipart/form-data">
+                        @csrf
+                        <input type="file" name="photo" id="photo" accept="image/jpeg,image/png,image/webp" class="sr-only"
+                               x-ref="photo" @change="$el.form.submit()">
+                        <button type="button" @click="$refs.photo.click()"
+                                class="font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                            Ubah foto
+                        </button>
+                    </form>
+
+                    @if($user->profile_photo_path)
+                        <form method="POST" action="{{ route('workspace.profile.photo.delete') }}"
+                              onsubmit="return confirm('Hapus foto profil?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors">Hapus</button>
+                        </form>
+                    @endif
+                </div>
+                @error('photo')
+                    <p class="text-xs text-red-500 max-w-40 text-center">{{ $message }}</p>
+                @enderror
             </div>
 
             <div class="flex-1 min-w-0">
-                <p class="text-lg font-bold text-gray-900 font-serif">Rizky Saria</p>
-                <p class="text-sm text-gray-400 mt-0.5">@@rizkysaria</p>
-                <p class="text-sm text-gray-500 mt-2">Manis Buah</p>
+                <p class="text-lg font-bold text-gray-900 font-serif truncate">{{ $user->name }}</p>
+                <p class="text-sm text-gray-400 mt-0.5 truncate">&#64;{{ $user->username }}</p>
+                @if($user->bio)
+                    <p class="text-sm text-gray-500 mt-2">{{ $user->bio }}</p>
+                @endif
+                @if($user->city || $user->country)
+                    <p class="text-xs text-gray-400 mt-2 flex items-center gap-1">
+                        <i class="ti ti-map-pin text-sm"></i>
+                        {{ collect([$user->city, $user->country])->filter()->implode(', ') }}
+                    </p>
+                @endif
             </div>
 
             <div class="grid grid-cols-3 gap-3 sm:w-80">
                 <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 text-center">
-                    <p class="text-xl font-bold text-gray-900">0</p>
+                    <p class="text-xl font-bold text-gray-900">{{ $articleCount }}</p>
                     <p class="text-xs text-blue-600 font-medium mt-0.5">Articles</p>
                 </div>
                 <div class="bg-orange-50 border border-orange-100 rounded-xl p-3 text-center">
@@ -55,7 +95,7 @@
     </div>
     @endif
 
-    <form method="POST" action="#" class="space-y-6">
+    <form method="POST" action="{{ route('workspace.profile.update') }}" class="space-y-6">
         @csrf
         @method('PUT')
 
@@ -70,42 +110,47 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                     <div>
-                        <label for="first_name" class="{{ $labelClass }}">Nama depan</label>
-                        <input type="text" id="first_name" name="first_name" value="Rizky"
-                               class="{{ $inputClass }} @error('first_name') border-red-300 @enderror">
-                        @error('first_name')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
-                    </div>
-
-                    <div>
-                        <label for="last_name" class="{{ $labelClass }}">Nama belakang</label>
-                        <input type="text" id="last_name" name="last_name" value="Saria" class="{{ $inputClass }}">
+                        <label for="name" class="{{ $labelClass }}">Nama</label>
+                        <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}"
+                               required maxlength="255" autocomplete="name"
+                               class="{{ $inputClass }} @error('name') border-red-300 @enderror">
+                        @error('name')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
                         <label for="username" class="{{ $labelClass }}">Username</label>
                         <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400">@@</span>
-                            <input type="text" id="username" name="username" value="rizkysaria"
-                                   class="{{ $inputClass }} pl-8">
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400">&#64;</span>
+                            <input type="text" id="username" name="username" value="{{ old('username', $user->username) }}"
+                                   required minlength="3" maxlength="30" autocomplete="username"
+                                   class="{{ $inputClass }} pl-8 @error('username') border-red-300 @enderror">
                         </div>
+                        @error('username')
+                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                        @else
+                            <p class="text-xs text-gray-400 mt-1">Huruf kecil, angka, titik, dan garis bawah (3–30 karakter)</p>
+                        @enderror
                     </div>
 
-                    <div>
+                    <div class="sm:col-span-2">
                         <label for="email" class="{{ $labelClass }}">Email</label>
-                        <input type="email" id="email" name="email" value="rizkysaria@example.com"
-                               class="{{ $inputClass }}">
+                        <input type="email" id="email" value="{{ $user->email }}" readonly disabled
+                               class="{{ $inputClass }} bg-gray-50 text-gray-500 cursor-not-allowed">
+                        <p class="text-xs text-gray-400 mt-1">Email tidak bisa diubah</p>
                     </div>
 
                 </div>
 
                 <div class="mt-4">
                     <label for="bio" class="{{ $labelClass }}">Tagline / bio singkat</label>
-                    <input type="text" id="bio" name="bio"
-                           value="{{ old('bio', 'Saya adalah seorang penulis yang suka berbagi pengetahuan.') }}"
-                           maxlength="160"
-                           placeholder="Kalimat pendek tentang kamu..."
-                           class="{{ $inputClass }}">
-                    <p class="text-xs text-gray-400 mt-1">Tampil di bawah nama di profil kamu</p>
+                    <input type="text" id="bio" name="bio" value="{{ old('bio', $user->bio) }}"
+                           maxlength="160" placeholder="Kalimat pendek tentang kamu..."
+                           class="{{ $inputClass }} @error('bio') border-red-300 @enderror">
+                    @error('bio')
+                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                    @else
+                        <p class="text-xs text-gray-400 mt-1">Tampil di bawah nama di profil kamu</p>
+                    @enderror
                 </div>
             </div>
         </div>
@@ -120,14 +165,18 @@
             <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label for="city" class="{{ $labelClass }}">Kota</label>
-                    <input type="text" id="city" name="city" value="{{ old('city', 'Manado') }}"
-                           placeholder="Manado" class="{{ $inputClass }}">
+                    <input type="text" id="city" name="city" value="{{ old('city', $user->city) }}"
+                           maxlength="100" placeholder="Manado"
+                           class="{{ $inputClass }} @error('city') border-red-300 @enderror">
+                    @error('city')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
 
                 <div>
                     <label for="country" class="{{ $labelClass }}">Negara</label>
-                    <input type="text" id="country" name="country" value="{{ old('country', 'Indonesia') }}"
-                           placeholder="Indonesia" class="{{ $inputClass }}">
+                    <input type="text" id="country" name="country" value="{{ old('country', $user->country) }}"
+                           maxlength="100" placeholder="Indonesia"
+                           class="{{ $inputClass }} @error('country') border-red-300 @enderror">
+                    @error('country')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
             </div>
         </div>
