@@ -7,20 +7,20 @@
 @endphp
 
 <main class="min-h-screen transition-all duration-300 p-8" :class="open ? 'ml-56' : 'ml-14'"
-      x-data="{ showConfirm: {{ session('confirm_password') || $errors->confirmPassword->any() ? 'true' : 'false' }} }"
+      x-data="{ showDeletePhoto: false, showConfirm: {{ session('confirm_password') || $errors->confirmPassword->any() ? 'true' : 'false' }} }"
       x-effect="showConfirm && $nextTick(() => $refs.currentPassword?.focus())">
 
     {{-- Page header --}}
     <div class="mb-8">
         <h1 class="text-2xl font-bold text-gray-900 font-serif">Profile</h1>
-        <p class="text-sm text-gray-500 mt-1">Kelola informasi dan keamanan akun kamu</p>
+        <p class="text-sm text-gray-500 mt-1">Manage your account information and security</p>
     </div>
 
     {{-- ===== OVERVIEW ===== --}}
     <div class="bg-white border border-gray-200 rounded-xl p-5 mb-6">
         <div class="flex flex-col sm:flex-row gap-5 sm:items-center">
 
-            {{-- Foto profil --}}
+            {{-- Profile photo --}}
             <div class="flex flex-col items-center gap-2 shrink-0">
                 @if($user->profile_photo_url)
                     <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}"
@@ -38,17 +38,17 @@
                                x-ref="photo" @change="$el.form.submit()">
                         <button type="button" @click="$refs.photo.click()"
                                 class="font-medium text-gray-600 hover:text-gray-900 transition-colors">
-                            Ubah foto
+                            Change photo
                         </button>
                     </form>
 
                     @if($user->profile_photo_path)
-                        <form method="POST" action="{{ route('workspace.profile.photo.delete') }}"
-                              onsubmit="return confirm('Hapus foto profil?')">
+                        <form id="delete-photo-form" method="POST" action="{{ route('workspace.profile.photo.delete') }}">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors">Hapus</button>
                         </form>
+                        <button type="button" @click="showDeletePhoto = true"
+                                class="text-gray-400 hover:text-red-500 transition-colors">Remove</button>
                     @endif
                 </div>
                 @error('photo')
@@ -99,18 +99,18 @@
         @csrf
         @method('PUT')
 
-        {{-- ===== INFORMASI DASAR ===== --}}
+        {{-- ===== BASIC INFORMATION ===== --}}
         <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
             <div class="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
                 <i class="ti ti-user text-base text-gray-400"></i>
-                <p class="text-sm font-medium text-gray-900">Informasi dasar</p>
+                <p class="text-sm font-medium text-gray-900">Basic information</p>
             </div>
 
             <div class="p-5">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                     <div>
-                        <label for="name" class="{{ $labelClass }}">Nama</label>
+                        <label for="name" class="{{ $labelClass }}">Name</label>
                         <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}"
                                required maxlength="255" autocomplete="name"
                                class="{{ $inputClass }} @error('name') border-red-300 @enderror">
@@ -128,7 +128,7 @@
                         @error('username')
                             <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                         @else
-                            <p class="text-xs text-gray-400 mt-1">Huruf kecil, angka, titik, dan garis bawah (3–30 karakter)</p>
+                            <p class="text-xs text-gray-400 mt-1">Lowercase letters, numbers, dots, and underscores (3–30 characters)</p>
                         @enderror
                     </div>
 
@@ -136,35 +136,35 @@
                         <label for="email" class="{{ $labelClass }}">Email</label>
                         <input type="email" id="email" value="{{ $user->email }}" readonly disabled
                                class="{{ $inputClass }} bg-gray-50 text-gray-500 cursor-not-allowed">
-                        <p class="text-xs text-gray-400 mt-1">Email tidak bisa diubah</p>
+                        <p class="text-xs text-gray-400 mt-1">Email cannot be changed</p>
                     </div>
 
                 </div>
 
                 <div class="mt-4">
-                    <label for="bio" class="{{ $labelClass }}">Tagline / bio singkat</label>
+                    <label for="bio" class="{{ $labelClass }}">Tagline / short bio</label>
                     <input type="text" id="bio" name="bio" value="{{ old('bio', $user->bio) }}"
-                           maxlength="160" placeholder="Kalimat pendek tentang kamu..."
+                           maxlength="160" placeholder="A short sentence about you..."
                            class="{{ $inputClass }} @error('bio') border-red-300 @enderror">
                     @error('bio')
                         <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                     @else
-                        <p class="text-xs text-gray-400 mt-1">Tampil di bawah nama di profil kamu</p>
+                        <p class="text-xs text-gray-400 mt-1">Shown below your name on your profile</p>
                     @enderror
                 </div>
             </div>
         </div>
 
-        {{-- ===== LOKASI ===== --}}
+        {{-- ===== LOCATION ===== --}}
         <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
             <div class="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
                 <i class="ti ti-map-pin text-base text-gray-400"></i>
-                <p class="text-sm font-medium text-gray-900">Lokasi</p>
+                <p class="text-sm font-medium text-gray-900">Location</p>
             </div>
 
             <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label for="city" class="{{ $labelClass }}">Kota</label>
+                    <label for="city" class="{{ $labelClass }}">City</label>
                     <input type="text" id="city" name="city" value="{{ old('city', $user->city) }}"
                            maxlength="100" placeholder="Manado"
                            class="{{ $inputClass }} @error('city') border-red-300 @enderror">
@@ -172,7 +172,7 @@
                 </div>
 
                 <div>
-                    <label for="country" class="{{ $labelClass }}">Negara</label>
+                    <label for="country" class="{{ $labelClass }}">Country</label>
                     <input type="text" id="country" name="country" value="{{ old('country', $user->country) }}"
                            maxlength="100" placeholder="Indonesia"
                            class="{{ $inputClass }} @error('country') border-red-300 @enderror">
@@ -185,27 +185,27 @@
         <div class="flex justify-end gap-3">
             <a href="{{ url()->previous() }}"
                class="px-5 py-2.5 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                Batal
+                Cancel
             </a>
             <button type="submit"
                     class="px-5 py-2.5 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-700 transition-colors">
-                Simpan perubahan
+                Save changes
             </button>
         </div>
 
     </form>
 
-    {{-- ===== KEAMANAN ===== --}}
+    {{-- ===== SECURITY ===== --}}
     <div class="bg-white border border-gray-200 rounded-xl overflow-hidden mt-6">
         <div class="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
             <i class="ti ti-lock text-base text-gray-400"></i>
-            <p class="text-sm font-medium text-gray-900">Keamanan akun</p>
+            <p class="text-sm font-medium text-gray-900">Account security</p>
         </div>
 
         <div class="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <p class="text-sm font-medium text-gray-900">Password</p>
-                <p class="text-xs text-gray-400 mt-0.5">Kamu perlu memasukkan password saat ini sebelum bisa menggantinya</p>
+                <p class="text-xs text-gray-400 mt-0.5">You need to enter your current password before you can change it</p>
             </div>
             <button type="button" @click="showConfirm = true"
                     class="px-5 py-2.5 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
@@ -214,7 +214,38 @@
         </div>
     </div>
 
-    {{-- ===== MODAL KONFIRMASI PASSWORD ===== --}}
+    {{-- ===== REMOVE PHOTO MODAL ===== --}}
+    @if($user->profile_photo_path)
+    <div x-show="showDeletePhoto" x-cloak x-transition.opacity
+         @keydown.escape.window="showDeletePhoto = false"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40">
+        <div @click.outside="showDeletePhoto = false"
+             class="w-full max-w-sm bg-white border border-gray-200 rounded-xl overflow-hidden"
+             role="alertdialog" aria-modal="true" aria-labelledby="delete-photo-title">
+            <div class="p-5 flex gap-4">
+                <div class="w-10 h-10 rounded-full bg-red-50 border border-red-100 flex items-center justify-center shrink-0">
+                    <i class="ti ti-trash text-lg text-red-500"></i>
+                </div>
+                <div>
+                    <p id="delete-photo-title" class="text-sm font-medium text-gray-900">Remove profile photo?</p>
+                    <p class="text-sm text-gray-500 mt-1">Your photo will be removed and replaced with your initials.</p>
+                </div>
+            </div>
+            <div class="px-5 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+                <button type="button" @click="showDeletePhoto = false"
+                        class="px-5 py-2.5 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" form="delete-photo-form"
+                        class="px-5 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors">
+                    Remove
+                </button>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- ===== PASSWORD CONFIRMATION MODAL ===== --}}
     <div x-show="showConfirm" x-cloak x-transition.opacity
          @keydown.escape.window="showConfirm = false"
          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40">
@@ -222,8 +253,8 @@
              class="w-full max-w-sm bg-white border border-gray-200 rounded-xl overflow-hidden"
              role="dialog" aria-modal="true" aria-labelledby="confirm-password-title">
             <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-                <p id="confirm-password-title" class="text-sm font-medium text-gray-900">Konfirmasi password</p>
-                <button type="button" @click="showConfirm = false" aria-label="Tutup"
+                <p id="confirm-password-title" class="text-sm font-medium text-gray-900">Confirm password</p>
+                <button type="button" @click="showConfirm = false" aria-label="Close"
                         class="text-gray-400 hover:text-gray-900 transition-colors">
                     <i class="ti ti-x text-base"></i>
                 </button>
@@ -231,16 +262,16 @@
 
             <form method="POST" action="{{ route('workspace.profile.confirm-password') }}" class="p-5">
                 @csrf
-                <p class="text-sm text-gray-500 mb-4">Masukkan password kamu saat ini untuk melanjutkan.</p>
+                <p class="text-sm text-gray-500 mb-4">Enter your current password to continue.</p>
 
-                <label for="current_password" class="{{ $labelClass }}">Password saat ini</label>
+                <label for="current_password" class="{{ $labelClass }}">Current password</label>
                 <div x-data="{ show: false }" class="relative">
                     <input :type="show ? 'text' : 'password'" id="current_password" name="current_password" required
                            autocomplete="current-password" placeholder="••••••••" x-ref="currentPassword"
                            class="{{ $inputClass }} pr-10 @if($errors->confirmPassword->has('current_password')) border-red-300 @endif">
                     <button type="button" @click="show = !show"
                             class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900 transition-colors"
-                            :aria-label="show ? 'Sembunyikan password' : 'Tampilkan password'">
+                            :aria-label="show ? 'Hide password' : 'Show password'">
                         <i class="ti text-base" :class="show ? 'ti-eye-off' : 'ti-eye'"></i>
                     </button>
                 </div>
@@ -251,11 +282,11 @@
                 <div class="flex justify-end gap-3 mt-5">
                     <button type="button" @click="showConfirm = false"
                             class="px-5 py-2.5 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                        Batal
+                        Cancel
                     </button>
                     <button type="submit"
                             class="px-5 py-2.5 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-700 transition-colors">
-                        Lanjutkan
+                        Continue
                     </button>
                 </div>
             </form>

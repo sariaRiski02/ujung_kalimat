@@ -7,8 +7,14 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <title>Workspace | Ujung Kalimat</title>
+    <style>
+        .preload, .preload * { transition: none !important; }
+    </style>
 </head>
-<body class="bg-gray-50 font-sans" x-data="{ open: false }">
+<body class="bg-gray-50 font-sans preload"
+      x-data="{ open: localStorage.getItem('workspaceSidebarOpen') === 'true' }"
+      x-init="$watch('open', value => localStorage.setItem('workspaceSidebarOpen', value));
+              requestAnimationFrame(() => requestAnimationFrame(() => $el.classList.remove('preload')))">
 
     {{-- Sidebar --}}
     @include('pages.pageWorkspace.sidebar')

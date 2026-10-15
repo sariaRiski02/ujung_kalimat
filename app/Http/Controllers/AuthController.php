@@ -80,7 +80,7 @@ class AuthController extends Controller
         $base = Str::limit($base !== '' ? $base : Str::slug($name, '_'), 24, '');
         $username = $base;
 
-        while (User::query()->whereIn('username', [$username, '@'.$username])->exists()) {
+        while (User::query()->where('username', $username)->orWhere('username', '@'.$username)->exists()) {
             $username = $base.random_int(100, 9999);
         }
 

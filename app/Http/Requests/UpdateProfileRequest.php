@@ -43,7 +43,7 @@ class UpdateProfileRequest extends FormRequest
                         ->exists();
 
                     if ($takenWithPrefix) {
-                        $fail('Username ini sudah dipakai.');
+                        $fail('This username is already taken.');
                     }
                 },
             ],
@@ -59,8 +59,8 @@ class UpdateProfileRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'username.regex' => 'Username hanya boleh berisi huruf kecil, angka, titik, dan garis bawah.',
-            'username.unique' => 'Username ini sudah dipakai.',
+            'username.regex' => 'The username may only contain lowercase letters, numbers, dots, and underscores.',
+            'username.unique' => 'This username is already taken.',
         ];
     }
 }

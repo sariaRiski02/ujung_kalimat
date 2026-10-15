@@ -86,7 +86,7 @@ class workspaceController extends Controller
     {
         $request->user()->update($request->safe()->only(['name', 'username', 'bio', 'city', 'country']));
 
-        return redirect()->route('workspace.profile')->with('success', 'Profil berhasil diperbarui.');
+        return redirect()->route('workspace.profile')->with('success', 'Profile updated successfully.');
     }
 
     public function updateProfilePhoto(Request $request): RedirectResponse
@@ -94,11 +94,11 @@ class workspaceController extends Controller
         $request->validate([
             'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048', 'dimensions:min_width=100,min_height=100,max_width=6000,max_height=6000'],
         ], [
-            'photo.image' => 'File harus berupa gambar.',
-            'photo.mimes' => 'Foto harus berformat JPG, PNG, atau WEBP.',
-            'photo.max' => 'Ukuran foto maksimal 2 MB.',
-            'photo.dimensions' => 'Ukuran foto minimal 100x100 piksel.',
-            'photo.uploaded' => 'Foto gagal diunggah, pastikan ukurannya maksimal 2 MB.',
+            'photo.image' => 'The file must be an image.',
+            'photo.mimes' => 'The photo must be a JPG, PNG, or WEBP file.',
+            'photo.max' => 'The photo may not be larger than 2 MB.',
+            'photo.dimensions' => 'The photo must be at least 100x100 pixels.',
+            'photo.uploaded' => 'The photo failed to upload. Make sure it is no larger than 2 MB.',
         ]);
 
         $user = $request->user();
@@ -112,7 +112,7 @@ class workspaceController extends Controller
             Storage::disk('public')->delete($oldPhoto);
         }
 
-        return redirect()->route('workspace.profile')->with('success', 'Foto profil berhasil diperbarui.');
+        return redirect()->route('workspace.profile')->with('success', 'Profile photo updated successfully.');
     }
 
     public function deleteProfilePhoto(Request $request): RedirectResponse
@@ -125,7 +125,7 @@ class workspaceController extends Controller
 
         $user->update(['profile_photo_path' => null]);
 
-        return redirect()->route('workspace.profile')->with('success', 'Foto profil berhasil dihapus.');
+        return redirect()->route('workspace.profile')->with('success', 'Profile photo removed successfully.');
     }
 
     public function analytics()
@@ -146,7 +146,7 @@ class workspaceController extends Controller
 
         if (! Hash::check($request->input('current_password'), $request->user()->password)) {
             return back()
-                ->withErrors(['current_password' => 'Password yang kamu masukkan salah.'], 'confirmPassword');
+                ->withErrors(['current_password' => 'The password you entered is incorrect.'], 'confirmPassword');
         }
 
         $request->session()->passwordConfirmed();
@@ -164,6 +164,6 @@ class workspaceController extends Controller
 
         $request->session()->forget('auth.password_confirmed_at');
 
-        return redirect()->route('workspace.profile')->with('success', 'Password berhasil diperbarui.');
+        return redirect()->route('workspace.profile')->with('success', 'Password updated successfully.');
     }
 }
