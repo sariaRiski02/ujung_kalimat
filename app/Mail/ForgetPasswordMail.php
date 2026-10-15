@@ -5,12 +5,11 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ForgetPasswordMail extends Mailable
+class ForgetPasswordMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -38,8 +37,9 @@ class ForgetPasswordMail extends Mailable
     public function content(): Content
     {
         $otp = $this->otp;
+
         return new Content(
-            view: 'mail.otp-forget-password', 
+            view: 'mail.otp-forget-password',
             with: compact('otp')
         );
     }

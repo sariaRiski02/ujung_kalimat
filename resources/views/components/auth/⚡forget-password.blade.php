@@ -2,6 +2,7 @@
 
 use App\Mail\ForgetPasswordMail;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -26,9 +27,6 @@ new class extends Component
             'email' => 'required|email',
         ]);
         $email = strtolower(trim($this->email));
-
-        
-        
         if (!User::where('email', $email)->exists()) {
             $this->errorMessage = 'Email tidak ditemukan.';
             return;
@@ -56,11 +54,50 @@ new class extends Component
             RateLimiter::hit($limiterKey, 180); // 3 minutes
             $this->countDown = 180; // 3 minutes countdown for the frontend
             $this->successMessage = 'Kode OTP telah dikirim ke email Anda.';
+            $this->errorMessage = '';
         } catch (\Throwable $th) {
             $this->errorMessage = 'Gagal mengirim kode OTP. Silakan coba lagi.';
             return;
         }
         
+    }
+
+    public function verifyOtp($otp){
+        
+
+        $this->errorMessage = '';
+        $this->successMessage = '';
+
+        $email = strtolower(trim($this->email));
+        $otpkey = 'reset_password_otp-' . hash('sha256', $email);
+        
+
+        if($email==''){
+            $this->errorMessage = 'Email tidak boleh kosong.';
+            return;
+        }
+
+        if (!Hash::check($otp, Cache::get($otpkey))) {
+            $this->errorMessage = 'Kode OTP salah.';
+            return;
+        }
+
+        if (!Cache::has($otpkey)) {
+            $this->errorMessage = 'Kode OTP telah kedaluwarsa.';
+            return;
+        }
+        Cache::forget($otpkey);
+        
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            $this->errorMessage = 'Pengguna tidak ditemukan.';
+            return;
+        }
+
+        Auth::login($user);
+
+        return redirect()->route('workspace.profile.reset-password');
     }
 
    
@@ -125,8 +162,7 @@ new class extends Component
     @endif
 
     <form>
-        @csrf
-
+        
         @if ($errorMessage)
             <div
                 class="mb-4 flex items-start gap-2.5 rounded-lg border border-red-100 bg-red-50 px-3.5 py-2.5"
@@ -145,30 +181,6 @@ new class extends Component
                 </button>
             </div>
         @endif
-
-        @session('otp')
-            <div x-data="{ show: true }"
-                    x-show="show"
-                    x-transition:enter="transition ease-out duration-300"
-                    x-transition:enter-start="opacity-0 -translate-y-1"
-                    x-transition:enter-end="opacity-100 translate-y-0"
-                    class="mb-4 flex items-start gap-2.5 rounded-lg border border-red-100 bg-red-50 px-3.5 py-2.5">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-400 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="12"/>
-                    <line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-                <p class="text-xs text-red-500 leading-relaxed">{{ session('otp') }}</p>
-                <button type="button" @click="show = false"
-                        class="ml-auto shrink-0 rounded-md p-0.5 text-red-300 hover:text-red-500 hover:bg-red-100 transition"
-                        aria-label="Tutup notifikasi">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                </button>
-            </div>
-        @endsession
 
         <input type="hidden" name="otp" :value="code">
         
@@ -200,7 +212,7 @@ new class extends Component
 
         <div class="flex items-center justify-between gap-2 mb-6" @paste.prevent="paste($event)">
             <template x-for="(digit, index) in digits" :key="index">
-                <input type="text" wire:model="digits[index]" inputmode="numeric" maxlength="1" autocomplete="one-time-code"
+                <input type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code"
                         data-otp :aria-label="'Digit ' + (index + 1)"
                         @input="input(index, $event)"
                         @keydown.backspace="backspace(index, $event)"
@@ -211,7 +223,8 @@ new class extends Component
 
         <p class="text-xs text-gray-400 text-center mb-6">Enter the 6-digit code sent to your email</p>
 
-        <button type="submit" :disabled="code.length < length" wire:click="test"
+        <button type="button" :disabled="code.length < length" 
+        @click="$wire.verifyOtp(code)"
                 class="w-full py-3 bg-[#1a1a2e] text-white rounded-lg text-[15px] font-medium hover:bg-[#2d2d4a] transition tracking-wide disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#1a1a2e]">
             Verify code
         </button>

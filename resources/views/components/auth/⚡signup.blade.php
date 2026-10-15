@@ -13,6 +13,12 @@ use Livewire\Component;
 
 new class extends Component
 {
+    // Notification Message
+    public $notificationMessage = [];
+
+    // Time to live for OTP in minutes
+    public $otpTtl = 600; // 600 seconds = 10 minutes
+    
 
     #[Validate('required|string|max:255')]
     public $name = '';
@@ -61,6 +67,9 @@ new class extends Component
             session()->flash('registration_error', 'Registration failed. Please try again.');
         }
 
+        Cache::forget($key);
+        Cache::forget('registration-otp-limit-' . hash('sha256', $email));
+
         
 
         return redirect()->route('workspace.dashboard');
@@ -74,37 +83,43 @@ new class extends Component
 
         $email = trim($this->email);
 
-        $key = 'registration-otp-' . hash('sha256', $email);
+        $limiterKey = 'registration-otp-limit-' . hash('sha256', $email);
+        $otpKey = 'registration-otp-' . hash('sha256', $email);
+
         
         
-        if(RateLimiter::tooManyAttempts($key, 3)){
-            session()->flash('otp_warning', 'Too many OTP requests. Please take a break and try again later.');
+        if(RateLimiter::tooManyAttempts($limiterKey, 4)){
+            $this->notificationMessage['otp_warning'] = 'Too many OTP requests. Please take a break and try again later.';
             return;
         }
 
-        RateLimiter::hit($key, 600); // 600 seconds = 10 minutes
+        RateLimiter::hit($limiterKey, $this->otpTtl); // 600 seconds = 10 minutes
 
         $otp_code = (string) rand(100000, 999999);
         
         try {
             // kirim otp
-
             Mail::to($email)->send(new OtpMail($otp_code));
             Cache::put(
-                $key,
+                $otpKey,
                 Hash::make($otp_code),
-                now()->addMinutes(10)
+                now()->addSeconds($this->otpTtl)
             );
-
-            session()->flash('otp_sent', 'OTP code has been sent to your email.');
+            $this->notificationMessage['otp_sent'] = 'OTP code has been sent to your email.';
         } catch (\Throwable $th) {
             
-            session()->flash('otp_error', 'Failed to send OTP. Please try again.');
+            $this->notificationMessage['otp_error'] = 'Failed to send OTP. Please try again.';
         }
+
+        
     }
 
-
-
+    // function delete Notification
+    public function deleteNotification($key){
+        if(isset($this->notificationMessage[$key])){
+            unset($this->notificationMessage[$key]);
+        }
+    }
 };
 ?>
 
@@ -118,11 +133,11 @@ new class extends Component
             'otp_warning'        => ['bg' => 'bg-yellow-50', 'border' => 'border-yellow-200', 'text' => 'text-yellow-700', 'icon' => 'text-yellow-400 hover:text-yellow-600'],
             'otp_sent'           => ['bg' => 'bg-green-50', 'border' => 'border-green-200', 'text' => 'text-green-700', 'icon' => 'text-green-400 hover:text-green-600'],
         ] as $flashKey => $style)
-            @if (session()->has($flashKey))
+            @if ($notificationMessage[$flashKey] ?? false)
                 <div x-data="{ show: true }" x-show="show" x-transition
                         class="flex items-start justify-between gap-3 mb-3 px-4 py-3 border {{ $style['bg'] }} {{ $style['border'] }} rounded-lg shadow-lg pointer-events-auto">
-                    <p class="text-[13px] font-medium {{ $style['text'] }}">{{ session($flashKey) }}</p>
-                    <button type="button" @click="show = false" aria-label="Dismiss notification"
+                    <p class="text-[13px] font-medium {{ $style['text'] }}">{{ $notificationMessage[$flashKey] }}</p>
+                    <button type="button" @click="show = false; $wire.deleteNotification('{{ $flashKey }}')" aria-label="Dismiss notification"
                             class="shrink-0 {{ $style['icon'] }} transition">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

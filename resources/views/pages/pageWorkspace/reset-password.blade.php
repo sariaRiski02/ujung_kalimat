@@ -1,4 +1,4 @@
-@extends('layouts.auth')
+@extends('layouts.workspace')
 
 @section('tab')
     Reset Password
@@ -6,7 +6,8 @@
 
 @section('content')
 
-    <main class="flex-1 flex items-start justify-center px-6 pt-20 pb-16">
+    <main class="min-h-screen transition-all duration-300 flex items-start justify-center px-6 pt-20 pb-16"
+          :class="open ? 'ml-56' : 'ml-14'">
         <div class="w-full max-w-sm">
 
             <h1 class="font-serif text-3xl font-bold text-[#1a1a2e] text-center leading-tight mb-1.5">
@@ -16,8 +17,10 @@
                 Choose a strong password you haven’t used before.
             </p>
 
-            <form method="POST" action="#" x-data="{ showPassword: false, showConfirmation: false }">
+            <form method="POST" action="{{ route('workspace.profile.reset-password.update') }}"
+                  x-data="{ showPassword: false, showConfirmation: false }">
                 @csrf
+                @method('PUT')
 
                 <div class="mb-4">
                     <label for="password" class="block text-[13px] font-medium text-gray-600 mb-1.5">New password</label>
@@ -80,8 +83,7 @@
             </form>
 
             <p class="text-center text-sm text-gray-400 mt-6">
-                Remember your password?
-                <a href="{{ route('signin') }}" class="text-[#1a1a2e] font-medium hover:underline">Back to sign in</a>
+                <a href="{{ route('workspace.profile') }}" class="text-[#1a1a2e] font-medium hover:underline">Back to profile</a>
             </p>
 
         </div>

@@ -16,6 +16,10 @@
 }
 
 /* Custom CSS */
+[x-cloak] {
+    display: none !important;
+}
+
 .search-overlay {
     position: absolute;
     inset: 0;
