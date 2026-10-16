@@ -1,14 +1,26 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\FollowController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\listArticleWorkspaceController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\workspaceController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+
+    Route::post('/article/{article:slug}/comments', [CommentController::class, 'store'])->middleware('throttle:20,1')->name('comments.store');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
+    Route::get('/notifications/{notification}', [NotificationController::class, 'read'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+
+    Route::post('/users/{user}/follow', [FollowController::class, 'store'])->name('users.follow');
+    Route::delete('/users/{user}/follow', [FollowController::class, 'destroy'])->name('users.unfollow');
 
     Route::prefix('workspace')->group(function () {
         Route::get('/', [workspaceController::class, 'dashboard'])->name('workspace.dashboard');
@@ -22,6 +34,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/monetization', [workspaceController::class, 'monetization'])->name('workspace.monetization');
         Route::get('/following', [workspaceController::class, 'following'])->name('workspace.following');
         Route::get('/followers', [workspaceController::class, 'followers'])->name('workspace.followers');
+        Route::delete('/followers/{user}', [FollowController::class, 'removeFollower'])->name('workspace.followers.remove');
         Route::get('/profile', [workspaceController::class, 'profile'])->name('workspace.profile');
         Route::put('/profile', [workspaceController::class, 'updateProfile'])->name('workspace.profile.update');
         Route::post('/profile/photo', [workspaceController::class, 'updateProfilePhoto'])->name('workspace.profile.photo.update');

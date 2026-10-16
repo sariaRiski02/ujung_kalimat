@@ -5,11 +5,7 @@
 
             <!-- Author Row -->
             <div class="flex items-center gap-2 mb-3">
-                <img
-                    src="https://i.pravatar.cc/40?img=12"
-                    alt=""
-                    class="w-5 h-5 rounded-full object-cover"
-                >
+                <x-user-avatar :user="$article->user" size="w-5 h-5" text="text-[9px]" />
                 <div class="flex items-center gap-1.5 text-sm text-gray-500 flex-wrap">
                     <span class="font-medium text-gray-900">{{ $article->user->name }}</span>
                     <span>·</span>
@@ -66,7 +62,7 @@
                         <i class="ti ti-heart text-lg"></i> {{ $article->love }}
                     </span>
                     <span class="flex items-center gap-1">
-                        <i class="ti ti-message text-lg"></i> 
+                        <i class="ti ti-message text-lg"></i> {{ $article->comments_count }}
                     </span>
                 </div>
 
@@ -81,6 +77,7 @@
             </div>
         </a>
     @endforeach
+
 
 </article>
 

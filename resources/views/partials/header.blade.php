@@ -97,19 +97,58 @@
             @auth
 
                 {{-- Notification button --}}
-                <div x-data="{ notificationOpen: false }">
-                    <button @click="notificationOpen = !notificationOpen" type="button" class="relative hidden md:flex lg:flex items-center justify-center w-9 h-9 rounded-full text-gray-500 hover:text-black hover:bg-gray-100 transition" aria-label="Notifications">
+                <div x-data="{ notificationOpen: false }" @keydown.escape.window="notificationOpen = false">
+                    <button @click="notificationOpen = !notificationOpen" type="button" class="relative hidden md:flex lg:flex items-center justify-center w-9 h-9 rounded-full text-gray-500 hover:text-black hover:bg-gray-100 transition" aria-label="Notifications" aria-haspopup="true" :aria-expanded="notificationOpen">
                         <i class="ti ti-bell text-[20px]" aria-hidden="true"></i>
-                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-[1.5px] border-white"></span>
+                        @if ($unreadNotificationsCount > 0)
+                            <span class="absolute top-0.5 right-0.5 min-w-4 h-4 px-1 bg-red-500 text-white text-[10px] leading-4 text-center font-sans font-medium rounded-full border-[1.5px] border-white">
+                                {{ $unreadNotificationsCount > 9 ? '9+' : $unreadNotificationsCount }}
+                            </span>
+                        @endif
                     </button>
 
                     <div
                         x-show="notificationOpen"
+                        x-cloak
                         @click.away="notificationOpen = false"
                         x-transition
-                        class="absolute top-full right-0 mt-2 w-56 bg-white rounded-3xl border border-gray-200 shadow-xl p-4 z-50"
+                        class="absolute top-full right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-3xl border border-gray-200 shadow-xl z-50 overflow-hidden font-sans"
                     >
-                        <p class="text-sm text-gray-400">Belum ada notifikasi</p>
+                        <div class="flex items-center justify-between px-5 pt-4 pb-2">
+                            <p class="text-sm font-semibold text-gray-900">Notifikasi</p>
+                            @if ($unreadNotificationsCount > 0)
+                                <form method="POST" action="{{ route('notifications.read-all') }}">
+                                    @csrf
+                                    <button type="submit" class="text-xs text-gray-500 hover:text-black transition">Tandai semua dibaca</button>
+                                </form>
+                            @endif
+                        </div>
+
+                        @forelse ($recentNotifications as $notification)
+                            <a href="{{ route('notifications.read', $notification->id) }}" @class([
+                                'flex items-start gap-3 px-5 py-3 hover:bg-gray-50 transition border-t border-gray-100',
+                                'bg-gray-50/70' => $notification->unread(),
+                            ])>
+                                <span class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600">
+                                    <i class="ti {{ match ($notification->data['type']) { 'reply' => 'ti-corner-down-right', 'follow' => 'ti-user-plus', default => 'ti-message' } }} text-base" aria-hidden="true"></i>
+                                </span>
+                                <span class="min-w-0 flex-1">
+                                    <span class="block text-sm text-gray-900 {{ $notification->unread() ? 'font-semibold' : '' }}">{{ $notification->data['message'] }}</span>
+                                    @isset($notification->data['article_title'])
+                                        <span class="block text-xs text-gray-500 truncate">{{ $notification->data['article_title'] }}</span>
+                                    @endisset
+                                    @isset($notification->data['excerpt'])
+                                        <span class="block text-xs text-gray-400 truncate">"{{ $notification->data['excerpt'] }}"</span>
+                                    @endisset
+                                    <span class="block text-[11px] text-gray-400 mt-0.5">{{ $notification->created_at->diffForHumans() }}</span>
+                                </span>
+                                @if ($notification->unread())
+                                    <span class="mt-2 h-2 w-2 shrink-0 rounded-full bg-red-500" aria-label="Belum dibaca"></span>
+                                @endif
+                            </a>
+                        @empty
+                            <p class="px-5 py-6 text-sm text-gray-400 border-t border-gray-100">Belum ada notifikasi</p>
+                        @endforelse
                     </div>
                 </div>
 

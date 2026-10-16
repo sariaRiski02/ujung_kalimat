@@ -12,8 +12,7 @@
                 <h1 class="text-2xl font-bold text-gray-900 font-serif">Edit Article</h1>
             </div>
 
-            <div class="flex items-center gap-3" 
-                x-data="{status: 'draft'}">
+            <div class="flex items-center gap-3">
 
                 {{-- Toggle Premium --}}
                 <button
@@ -32,7 +31,8 @@
                 {{-- Save as Draft --}}
                 <button
                     type="submit"
-                    @click="status = 'draft'"
+                    name="status"
+                    value="draft"
                     class="flex items-center gap-2 border border-gray-300 rounded-full px-4 py-1.5 text-sm font-medium text-gray-500"
                 >
                     <i class="ti ti-device-floppy" aria-hidden="true"></i>
@@ -42,13 +42,12 @@
                 {{-- Publish --}}
                 <button
                     type="submit"
+                    name="status"
+                    value="published"
                     class="bg-green-600 text-white text-sm font-medium px-5 py-1.5 rounded-full"
-                    @click="status = 'published'"
                 >
                     Publish
                 </button>
-
-                <input type="hidden" name="status" :value="status">
             </div>
 
         </div>

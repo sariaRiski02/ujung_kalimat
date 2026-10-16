@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
@@ -101,5 +103,42 @@ class User extends Authenticatable
     public function subscription()
     {
         return $this->hasMany(Subscriptions::class);
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function followers(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, 'follows', 'following_id', 'follower_id')->withTimestamps();
+    }
+
+    public function following(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, 'follows', 'follower_id', 'following_id')->withTimestamps();
+    }
+
+    public function isFollowing(User $user): bool
+    {
+        return $this->following()->whereKey($user->getKey())->exists();
+    }
+
+    /**
+     * Returns true only when a new follow relation was created.
+     */
+    public function follow(User $user): bool
+    {
+        if ($user->is($this)) {
+            return false;
+        }
+
+        return count($this->following()->syncWithoutDetaching([$user->getKey()])['attached']) > 0;
+    }
+
+    public function unfollow(User $user): void
+    {
+        $this->following()->detach($user->getKey());
     }
 }

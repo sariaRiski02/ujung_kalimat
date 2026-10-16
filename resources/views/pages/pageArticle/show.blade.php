@@ -18,11 +18,7 @@
         
         {{-- Author meta --}}
         <div class="flex items-center gap-3 mb-6 font-sans">
-            <img
-                src="https://i.pravatar.cc/80?img=12"
-                alt="Lamda"
-                class="w-10 h-10 rounded-full object-cover"
-            >
+            <x-user-avatar :user="$article->user" size="w-10 h-10" />
             <div>
                 <p class="text-sm font-medium text-gray-900">{{$article->user->name}}</p>
                 <div class="flex items-center gap-1.5 text-sm text-gray-500">
@@ -30,6 +26,21 @@
                     
                 </div>
             </div>
+            @auth
+                @if (auth()->id() !== $article->user_id)
+                    <form method="POST" action="{{ route($isFollowingAuthor ? 'users.unfollow' : 'users.follow', $article->user) }}" class="ml-auto">
+                        @csrf
+                        @if ($isFollowingAuthor)
+                            @method('DELETE')
+                        @endif
+                        <button type="submit" class="px-4 py-1.5 rounded-full text-xs font-semibold transition {{ $isFollowingAuthor ? 'border border-gray-200 text-gray-800 hover:bg-red-50 hover:text-red-600 hover:border-red-200' : 'bg-black text-white hover:bg-gray-800' }}">
+                            {{ $isFollowingAuthor ? 'Following' : 'Follow' }}
+                        </button>
+                    </form>
+                @endif
+            @else
+                <a href="{{ route('signin') }}" class="ml-auto px-4 py-1.5 rounded-full bg-black text-white text-xs font-semibold hover:bg-gray-800 transition">Follow</a>
+            @endauth
         </div>
 
         <hr class="border-t border-gray-200 mb-5">
@@ -41,10 +52,10 @@
                     <i class="ti ti-heart text-lg"></i>
                     {{ $article->love }}
                 </button>
-                <button class="flex items-center gap-1.5 hover:text-gray-900 transition-colors">
+                <a href="#comments" class="flex items-center gap-1.5 hover:text-gray-900 transition-colors">
                     <i class="ti ti-message text-lg"></i>
-                    0
-                </button>
+                    {{ $commentsCount }}
+                </a>
             </div>
             <div class="flex items-center gap-4 text-gray-400">
                 <button class="hover:text-gray-900 transition-colors" aria-label="Simpan">
@@ -84,11 +95,11 @@
         {!!$article->content!!}
 
         
-    </article>
+    
 
    
 
-    @if (!auth()->user()?->isSubscriber())
+    @if (auth()->user()?->isSubscriber())
             {{-- ====== PAYWALL OVERLAY (STATIC) ====== --}}
         <div class="relative -mt-40 md:-mt-48">
 
@@ -128,23 +139,9 @@
 
     
 
-    
-    
     <hr class="border-t border-gray-200 my-5">
     @include('pages.pageArticle.comment')
 
-
-    <hr class="border-t border-gray-200 my-10">
-
-    @include('partials.articles')
-
-     <!-- Stats -->
-    <div class="flex items-center gap-4 mt-2.5 text-xs text-gray-400">
-        
-        <a href="#" class="ml-auto flex items-center gap-1 text-gray-900 font-medium hover:underline underline-offset-2">
-            Read More <i class="ti ti-arrow-right text-sm"></i>
-        </a>
-    </div>
 
 </main>
 @endsection

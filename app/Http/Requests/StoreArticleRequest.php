@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Validation\Rule;
 
 class StoreArticleRequest extends FormRequest
 {
@@ -29,6 +29,8 @@ class StoreArticleRequest extends FormRequest
         $content = $this->input('content');
 
         if (! is_array($content)) {
+            $this->merge(['content' => []]);
+
             return;
         }
 
@@ -43,7 +45,7 @@ class StoreArticleRequest extends FormRequest
 
         return [
             'title' => 'required|string|max:255',
-            'content' => 'required|array',
+            'content' => [Rule::requiredIf(fn () => $this->input('status') === 'published'), 'nullable', 'array'],
             'content.*.type' => 'required|string|in:paragraph,quote,image',
             'content.*.text' => 'required_if:content.*.type,paragraph,quote|nullable|string',
             'content.*.image' => 'exclude_unless:content.*.type,image|required_without:content.*.url|image|mimes:jpeg,png,jpg,webp|max:5048',

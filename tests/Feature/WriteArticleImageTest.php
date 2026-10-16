@@ -60,11 +60,12 @@ class WriteArticleImageTest extends TestCase
         $response->assertSessionHasErrors('content.0.image');
     }
 
-    public function test_only_empty_lines_are_rejected(): void
+    public function test_only_empty_lines_are_rejected_when_publishing(): void
     {
-        $response = $this->actingAs(User::factory()->create())->post(route('workspace.write.post'), $this->payload([
-            0 => ['type' => 'paragraph', 'text' => ''],
-        ]));
+        $response = $this->actingAs(User::factory()->create())->post(route('workspace.write.post'), [
+            ...$this->payload([0 => ['type' => 'paragraph', 'text' => '']]),
+            'status' => 'published',
+        ]);
 
         $response->assertSessionHasErrors('content');
     }

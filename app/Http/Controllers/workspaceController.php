@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreArticleRequest;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Models\Article;
+use App\Models\Comment;
 use App\Services\ArticleService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,9 +19,18 @@ class workspaceController extends Controller
         protected ArticleService $service
     ) {}
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
-        return view('pages.pageWorkspace.dashboard');
+        $user = $request->user();
+
+        return view('pages.pageWorkspace.dashboard', [
+            'articlesCount' => $user->article()->count(),
+            'readersCount' => (int) $user->article()->sum('views'),
+            'commentsCount' => Comment::whereRelation('article', 'user_id', $user->id)->count(),
+            'followersCount' => $user->followers()->count(),
+            'followingCount' => $user->following()->count(),
+            'recentArticles' => $user->article()->latest()->orderByDesc('id')->limit(5)->get(['id', 'title', 'slug', 'status', 'created_at']),
+        ]);
     }
 
     public function write()
@@ -44,14 +54,14 @@ class workspaceController extends Controller
     {
         $this->service->update($article, $request);
 
-        return redirect()->route('workspace.articles')->with('success', 'article has been updated');
+        return redirect()->route('workspace.articles')->with('success', $request->status === 'draft' ? 'article has been saved as draft' : 'article has been updated');
     }
 
     public function store(StoreArticleRequest $request)
     {
         $this->service->store($request);
 
-        return redirect()->route('workspace.articles')->with('success', 'article has been store');
+        return redirect()->route('workspace.articles')->with('success', $request->status === 'draft' ? 'article has been saved as draft' : 'article has been store');
     }
 
     // public function delete(Article $article){
@@ -64,14 +74,21 @@ class workspaceController extends Controller
         return view('pages.pageWorkspace.monetization');
     }
 
-    public function following()
+    public function following(Request $request)
     {
-        return view('pages.pageWorkspace.following');
+        return view('pages.pageWorkspace.following', [
+            'followings' => $request->user()->following()->orderByPivot('created_at', 'desc')->get(),
+        ]);
     }
 
-    public function followers()
+    public function followers(Request $request)
     {
-        return view('pages.pageWorkspace.followers');
+        $user = $request->user();
+
+        return view('pages.pageWorkspace.followers', [
+            'followers' => $user->followers()->orderByPivot('created_at', 'desc')->get(),
+            'followingIds' => $user->following()->pluck('users.id'),
+        ]);
     }
 
     public function profile(Request $request)

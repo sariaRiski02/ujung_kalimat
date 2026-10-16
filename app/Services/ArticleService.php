@@ -14,7 +14,7 @@ class ArticleService
     {
         $article = Article::create([
             'title' => $request->title,
-            'content' => $this->prepareContent($request->validated('content')),
+            'content' => $this->prepareContent($request->validated('content') ?? []),
             'is_premium' => $request->is_premium,
             'status' => $request->status,
         ]);
@@ -30,7 +30,7 @@ class ArticleService
     public function update(Article $article, StoreArticleRequest $request)
     {
         $data = Arr::except($request->validated(), ['images', 'content']);
-        $data['content'] = $this->prepareContent($request->validated('content'));
+        $data['content'] = $this->prepareContent($request->validated('content') ?? []);
         $article->update($data);
 
     }
