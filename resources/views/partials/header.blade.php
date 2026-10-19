@@ -94,6 +94,21 @@
                 <i class="ti ti-edit text-[18px]" aria-hidden="true"></i>
                 <span class="text-sm md:inline hidden">Write</span>
             </a>
+
+            {{-- Subscribe button --}}
+            <a href="{{ route('subscribe') }}" class="hidden md:flex lg:flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-gray-300 text-sm text-gray-700 hover:border-black hover:text-black transition">
+                <i class="ti ti-crown text-[16px]" aria-hidden="true"></i>
+                <span>Subscribe</span>
+            </a>
+
+            {{-- Subscribed badge (tampil kalau sudah langganan) --}}
+            @if ($isSubscribed ?? false)
+                <span class="hidden md:inline-flex lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
+                    <i class="ti ti-circle-check text-[14px]" aria-hidden="true"></i>
+                    Subscribed
+                </span>
+            @endif
+
             @auth
 
                 {{-- Notification button --}}

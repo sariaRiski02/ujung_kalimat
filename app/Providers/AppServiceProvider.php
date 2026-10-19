@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\View;
+use Midtrans\Config as MidtransConfig;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -28,5 +29,12 @@ class AppServiceProvider extends ServiceProvider
                 'recentNotifications' => $user?->notifications()->latest()->limit(10)->get() ?? collect(),
             ]);
         });
+
+        
+        MidtransConfig::$serverKey = config('services.midtrans.server_key');
+        MidtransConfig::$clientKey = config('services.midtrans.client_key');
+        MidtransConfig::$isProduction = config('services.midtrans.is_production');
+        MidtransConfig::$isSanitized = true;
+
     }
 }

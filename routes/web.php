@@ -6,12 +6,15 @@ use App\Http\Controllers\FollowController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\listArticleWorkspaceController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\workspaceController;
 use Illuminate\Support\Facades\Route;
+use Midtrans\Snap;
 
 Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+    
 
     Route::post('/article/{article:slug}/comments', [CommentController::class, 'store'])->middleware('throttle:20,1')->name('comments.store');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
@@ -46,12 +49,14 @@ Route::middleware('auth')->group(function () {
             Route::put('/profile/reset-password', [workspaceController::class, 'updatePassword'])->name('workspace.profile.reset-password.update');
         });
         Route::get('/article/id/analytics', [workspaceController::class, 'analytics'])->name('workspace.article.analytics');
+
     });
+    Route::post('/pay', [PaymentController::class, 'pay'])->name('pay');
 });
 
 Route::get('/article/{article:slug}', [IndexController::class, 'show'])->name('article.show');
 Route::get('/', [IndexController::class, 'index'])->name('welcome');
-
+Route::get('subscribe', [workspaceController::class, 'subscribe'])->name('subscribe');
 Route::view('/terms', 'pages.terms')->name('terms');
 Route::view('/privacy', 'pages.privacy')->name('privacy');
 
@@ -66,3 +71,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/forget-password', [AuthController::class, 'forgotPasswordView'])->name('forget-password');
 
 });
+
+
+
+

@@ -19,6 +19,11 @@ class workspaceController extends Controller
         protected ArticleService $service
     ) {}
 
+    public function subscribe(Request $request)
+    {
+        return view('pages.subscribe');
+    }
+
     public function dashboard(Request $request)
     {
         $user = $request->user();

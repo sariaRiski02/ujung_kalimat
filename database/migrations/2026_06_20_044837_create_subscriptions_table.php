@@ -14,10 +14,8 @@ return new class extends Migration
        Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->enum('plan', ['monthly', 'yearly'])->default('monthly');
             $table->timestamp('started_at')->nullable();
-            $table->timestamp('expired_at')->nullable();
-            $table->enum('status', ['pending', 'active', 'expired', 'cancelled'])->default('pending');
+            $table->timestamp('ended_at')->nullable();
             $table->timestamps();
         });
     }
