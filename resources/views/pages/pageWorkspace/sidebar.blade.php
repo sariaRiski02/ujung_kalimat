@@ -120,6 +120,19 @@
 
         {{-- Profile --}}
         <div class="border-t border-gray-100 p-3">
+            {{-- Keluar dari workspace ke tampilan publik (sesi login tetap aktif) --}}
+            <a href="{{ route('welcome') }}"
+               title="Back to Home"
+               class="flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors mb-1"
+               :class="open ? '' : 'justify-center'"
+            >
+                <i class="ti ti-home text-lg shrink-0"></i>
+                <span x-show="open"
+                    x-transition:enter="transition ease-out duration-200 delay-200"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100">Back to Home</span>
+            </a>
+
             <a href="{{ route('workspace.profile') }}"
                class="flex items-center gap-3 px-2 py-2 rounded-lg text-sm {{ request()->routeIs('workspace.profile') ? 'text-gray-900 bg-gray-100' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900' }} transition-colors"
                :class="open ? '' : 'justify-center'"

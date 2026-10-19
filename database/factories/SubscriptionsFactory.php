@@ -17,42 +17,31 @@ class SubscriptionsFactory extends Factory
      *
      * @return array<string, mixed>
      */
-     public function definition(): array
+    public function definition(): array
     {
-        $plan = fake()->randomElement(['monthly', 'yearly']);
         $startedAt = fake()->dateTimeBetween('-1 year', 'now');
-
-        $expiredAt = $plan === 'monthly'
-            ? Carbon::parse($startedAt)->addMonth()
-            : Carbon::parse($startedAt)->addYear();
 
         return [
             'user_id' => User::factory(),
-            'plan' => $plan,
+            'membership_plan_id' => null,
             'started_at' => $startedAt,
-            'expired_at' => $expiredAt,
-            // status ikut logis sesuai apakah sudah lewat expired_at atau belum
-            'status' => Carbon::parse($expiredAt)->isPast() ? 'expired' : 'active',
+            'ended_at' => Carbon::parse($startedAt)->addMonth(),
         ];
     }
 
-    // state khusus kalau mau bikin yang pasti expired
     public function expired(): static
     {
         return $this->state(fn () => [
             'started_at' => now()->subYear(),
-            'expired_at' => now()->subMonth(),
-            'status' => 'expired',
+            'ended_at' => now()->subMonth(),
         ]);
     }
 
-    // state khusus kalau mau bikin yang pasti masih aktif
     public function active(): static
     {
         return $this->state(fn () => [
             'started_at' => now()->subDays(5),
-            'expired_at' => now()->addMonth(),
-            'status' => 'active',
+            'ended_at' => now()->addMonth(),
         ]);
     }
 }

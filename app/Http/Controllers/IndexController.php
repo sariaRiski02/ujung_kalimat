@@ -39,20 +39,14 @@ class IndexController extends Controller
         $commentsCount = $article->comments()->count();
         $isFollowingAuthor = Auth::check() && Auth::user()->isFollowing($article->user);
 
-        $partial = $this->helper->getContent($article->content, 40).'.... Subscribe for continue';
-        // if($article->is_premium && !Auth::check()){
-        //     $article->content = $partial;
-        //     return view('pages.pageArticle.show', compact('article', 'comments', 'commentsCount', 'isFollowingAuthor'));
-        // }
+        $isLocked = $article->isLockedFor(Auth::user());
 
-        // if(Auth::user()->isSubscriber()){
-        return view('pages.pageArticle.show', compact('article', 'comments', 'commentsCount', 'isFollowingAuthor'));
-        // }
+        if ($isLocked) {
+            // Hanya potongan awal yang dikirim ke browser; model tidak disimpan.
+            $article->content = $this->helper->getContent($article->content, 40);
+        }
 
-        $article->content = $partial;
-
-        return view('pages.pageArticle.show', compact('article', 'comments', 'commentsCount', 'isFollowingAuthor'));
-
+        return view('pages.pageArticle.show', compact('article', 'comments', 'commentsCount', 'isFollowingAuthor', 'isLocked'));
     }
 
     public function signin()

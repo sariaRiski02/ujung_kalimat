@@ -35,6 +35,18 @@ class Article extends Model
         $query->where('status', 'published');
     }
 
+    /**
+     * Artikel premium hanya terbuka untuk penulisnya dan subscriber aktif.
+     */
+    public function isLockedFor(?User $user): bool
+    {
+        if (! $this->is_premium) {
+            return false;
+        }
+
+        return ! $user || ($user->id !== $this->user_id && ! $user->isSubscriber());
+    }
+
     protected function cleanContent(): Attribute
     {
         return Attribute::make(

@@ -95,18 +95,20 @@
                 <span class="text-sm md:inline hidden">Write</span>
             </a>
 
-            {{-- Subscribe button --}}
-            <a href="{{ route('subscribe') }}" class="hidden md:flex lg:flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-gray-300 text-sm text-gray-700 hover:border-black hover:text-black transition">
-                <i class="ti ti-crown text-[16px]" aria-hidden="true"></i>
-                <span>Subscribe</span>
-            </a>
-
-            {{-- Subscribed badge (tampil kalau sudah langganan) --}}
             @if ($isSubscribed ?? false)
-                <span class="hidden md:inline-flex lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
+                {{-- Badge langganan aktif --}}
+                <a href="{{ route('subscribe') }}"
+                   title="Langganan aktif sampai {{ $subscriptionEndsAt?->locale('id')->translatedFormat('d F Y') }}"
+                   class="hidden md:inline-flex lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-100 text-green-700 text-xs font-medium hover:bg-green-200 transition">
                     <i class="ti ti-circle-check text-[14px]" aria-hidden="true"></i>
                     Subscribed
-                </span>
+                </a>
+            @else
+                {{-- Subscribe button --}}
+                <a href="{{ route('subscribe') }}" class="hidden md:flex lg:flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-gray-300 text-sm text-gray-700 hover:border-black hover:text-black transition">
+                    <i class="ti ti-crown text-[16px]" aria-hidden="true"></i>
+                    <span>Subscribe</span>
+                </a>
             @endif
 
             @auth

@@ -9,12 +9,10 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\workspaceController;
 use Illuminate\Support\Facades\Route;
-use Midtrans\Snap;
 
 Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
-    
 
     Route::post('/article/{article:slug}/comments', [CommentController::class, 'store'])->middleware('throttle:20,1')->name('comments.store');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
@@ -35,6 +33,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/article/{article:slug}/update', [workspaceController::class, 'edit'])->name('workspace.article.edit');
 
         Route::get('/monetization', [workspaceController::class, 'monetization'])->name('workspace.monetization');
+        Route::post('/monetization/withdraw', [workspaceController::class, 'withdraw'])->name('workspace.monetization.withdraw');
         Route::get('/following', [workspaceController::class, 'following'])->name('workspace.following');
         Route::get('/followers', [workspaceController::class, 'followers'])->name('workspace.followers');
         Route::delete('/followers/{user}', [FollowController::class, 'removeFollower'])->name('workspace.followers.remove');
@@ -52,7 +51,10 @@ Route::middleware('auth')->group(function () {
 
     });
     Route::post('/pay', [PaymentController::class, 'pay'])->name('pay');
+    Route::get('/pay/{payment:order_id}/status', [PaymentController::class, 'status'])->name('pay.status');
 });
+
+Route::post('/midtrans/notification', [PaymentController::class, 'notification'])->name('midtrans.notification');
 
 Route::get('/article/{article:slug}', [IndexController::class, 'show'])->name('article.show');
 Route::get('/', [IndexController::class, 'index'])->name('welcome');
@@ -71,7 +73,3 @@ Route::middleware('guest')->group(function () {
     Route::get('/forget-password', [AuthController::class, 'forgotPasswordView'])->name('forget-password');
 
 });
-
-
-
-

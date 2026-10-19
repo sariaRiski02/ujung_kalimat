@@ -29,6 +29,19 @@ class DashboardTest extends TestCase
         $this->get(route('workspace.dashboard'))->assertRedirect(route('signin'));
     }
 
+    public function test_sidebar_has_back_to_home_link_that_keeps_user_signed_in(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('workspace.dashboard'))
+            ->assertSee('Back to Home')
+            ->assertSee('href="'.route('welcome').'"', false);
+
+        $this->get(route('welcome'))->assertOk();
+        $this->assertAuthenticatedAs($user);
+    }
+
     public function test_stats_reflect_real_data(): void
     {
         $user = User::factory()->create();

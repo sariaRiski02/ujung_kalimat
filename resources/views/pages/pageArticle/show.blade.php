@@ -99,8 +99,8 @@
 
    
 
-    @if (auth()->user()?->isSubscriber())
-            {{-- ====== PAYWALL OVERLAY (STATIC) ====== --}}
+    @if ($isLocked)
+        {{-- ====== PAYWALL OVERLAY ====== --}}
         <div class="relative -mt-40 md:-mt-48">
 
             {{-- Gradient fade menutupi bagian bawah konten --}}
@@ -120,8 +120,7 @@
                 </p>
 
                 <div class="flex items-center justify-center gap-3">
-                    
-                    <a href="#"
+                    <a href="{{ route('subscribe') }}"
                     class="bg-gray-900 text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-gray-800 transition-colors">
                         Subscribe Now
                     </a>
@@ -134,8 +133,9 @@
                 </div>
             </div>
         </div>
-        {{-- ====== END PAYWALL OVERLAY ====== --}}    
+        {{-- ====== END PAYWALL OVERLAY ====== --}}
     @endif
+    </article>
 
     
 

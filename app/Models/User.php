@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -85,19 +86,39 @@ class User extends Authenticatable
 
     public function isSubscriber()
     {
-        if ($this->subscription->isEmpty()) {
-            return false;
-        }
+        return $this->subscription()->active()->exists();
+    }
 
-        return $this->subscription
-            ->sortByDesc('created_at')
-            ->first()?->isActive() ?? false;
+    public function subscriptionEndsAt(): ?Carbon
+    {
+        $endedAt = $this->subscription()->active()->max('ended_at');
 
+        return $endedAt ? Carbon::parse($endedAt) : null;
     }
 
     public function article()
     {
         return $this->hasMany(Article::class);
+    }
+
+    public function withdrawals(): HasMany
+    {
+        return $this->hasMany(Withdrawal::class);
+    }
+
+    public function totalEarnings(): int
+    {
+        return (int) $this->article()->where('is_premium', true)->sum('views') * config('monetization.rate_per_view');
+    }
+
+    public function totalWithdrawn(): int
+    {
+        return (int) $this->withdrawals()->where('status', '!=', Withdrawal::STATUS_REJECTED)->sum('amount');
+    }
+
+    public function availableBalance(): int
+    {
+        return max(0, $this->totalEarnings() - $this->totalWithdrawn());
     }
 
     public function subscription()

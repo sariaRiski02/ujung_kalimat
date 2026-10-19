@@ -48,11 +48,11 @@ class HelperService
         $result = array_slice($arrayContent, 0, (int) $contentPercentage);
         $arrayTemp = array_map(function ($item) {
             if ($item['tag'] == 'p') {
-                return '<p>'.$item['text'].'</p>';
+                return '<p>'.e($item['text']).'</p>';
             } elseif ($item['tag'] == 'img') {
                 return '<img src="'.e($item['src']).'" alt="">';
             } else {
-                return '<blockqoute>'.$item['text'].'</blockqoute>';
+                return '<blockquote>'.e($item['text']).'</blockquote>';
             }
         }, $result);
 

@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreArticleRequest;
 use App\Http\Requests\UpdateProfileRequest;
+use App\Http\Requests\WithdrawRequest;
 use App\Models\Article;
 use App\Models\Comment;
+use App\Models\User;
 use App\Services\ArticleService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
@@ -21,7 +24,9 @@ class workspaceController extends Controller
 
     public function subscribe(Request $request)
     {
-        return view('pages.subscribe');
+        return view('pages.subscribe', [
+            'subscriptionEndsAt' => $request->user()?->subscriptionEndsAt(),
+        ]);
     }
 
     public function dashboard(Request $request)
@@ -74,9 +79,42 @@ class workspaceController extends Controller
     //     return redirect()->route('workspace.articles')->with('success', 'article has been deleted');
     // }
 
-    public function monetization()
+    public function monetization(Request $request)
     {
-        return view('pages.pageWorkspace.monetization');
+        $user = $request->user();
+
+        return view('pages.pageWorkspace.monetization', [
+            'ratePerView' => config('monetization.rate_per_view'),
+            'minWithdrawal' => config('monetization.min_withdrawal'),
+            'totalEarnings' => $user->totalEarnings(),
+            'totalWithdrawn' => $user->totalWithdrawn(),
+            'availableBalance' => $user->availableBalance(),
+            'premiumViews' => (int) $user->article()->where('is_premium', true)->sum('views'),
+            'articles' => $user->article()->orderByDesc('is_premium')->orderByDesc('views')->get(['id', 'title', 'slug', 'is_premium', 'views']),
+            'withdrawals' => $user->withdrawals()->latest()->latest('id')->get(),
+        ]);
+    }
+
+    public function withdraw(WithdrawRequest $request): RedirectResponse
+    {
+        $withdrawal = DB::transaction(function () use ($request) {
+            $user = User::whereKey($request->user()->id)->lockForUpdate()->first();
+
+            if ($request->integer('amount') > $user->availableBalance()) {
+                return null;
+            }
+
+            return $user->withdrawals()->create([
+                'amount' => $request->integer('amount'),
+                'phone_number' => $request->string('phone_number')->toString(),
+            ]);
+        });
+
+        if (! $withdrawal) {
+            return back()->withErrors(['amount' => 'The amount exceeds your available balance.']);
+        }
+
+        return redirect()->route('workspace.monetization')->with('success', 'Withdrawal requested. The money will be transferred to '.$withdrawal->phone_number.'.');
     }
 
     public function following(Request $request)
