@@ -7,6 +7,7 @@ use App\Models\MembershipPlans;
 use App\Models\Payments;
 use App\Models\Subscriptions;
 use App\Models\User;
+use App\Models\Withdrawal;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Auth;
 
@@ -32,6 +33,55 @@ class DummyDataSeeder extends Seeder
         foreach ($this->articles() as $index => $data) {
             $this->article($authors[$index % count($authors)], $data);
         }
+
+        $this->seedWithdrawals($authors);
+        $this->seedAdmin();
+    }
+
+    private function seedAdmin(): void
+    {
+        $admin = $this->user('Demo Admin', 'admin.demo@example.test', 'demoadmin', 'Akun demo admin untuk memproses penarikan.');
+
+        // Role selalu di-reset ke "user" saat dibuat, jadi harus diset setelahnya.
+        $admin->forceFill(['role' => 'admin'])->save();
+    }
+
+    /**
+     * Penarikan contoh dengan berbagai status, jumlahnya dibatasi saldo penulis.
+     *
+     * @param  array<int, User>  $authors
+     */
+    private function seedWithdrawals(array $authors): void
+    {
+        $minimum = (int) config('monetization.min_withdrawal');
+        $phones = ['081234567801', '081234567802', '081234567803'];
+
+        foreach ($authors as $index => $author) {
+            if ($author->withdrawals()->exists()) {
+                continue;
+            }
+
+            $balance = $author->availableBalance();
+
+            // Ditolak tidak mengurangi saldo, jadi selalu bisa dibuat.
+            $this->withdrawal($author, $minimum, $phones[$index], Withdrawal::STATUS_REJECTED, now()->subDays(6));
+
+            if ($balance >= $minimum) {
+                $this->withdrawal($author, $minimum, $phones[$index], Withdrawal::STATUS_PAID, now()->subDays(3));
+                $balance -= $minimum;
+            }
+
+            if ($balance >= $minimum) {
+                $this->withdrawal($author, $minimum, $phones[$index], Withdrawal::STATUS_PENDING, now()->subHours(5));
+            }
+        }
+    }
+
+    private function withdrawal(User $user, int $amount, string $phone, string $status, $createdAt): void
+    {
+        $withdrawal = $user->withdrawals()->create(['amount' => $amount, 'phone_number' => $phone, 'status' => $status]);
+
+        $withdrawal->forceFill(['created_at' => $createdAt, 'updated_at' => $createdAt])->saveQuietly();
     }
 
     /**
@@ -119,7 +169,10 @@ class DummyDataSeeder extends Seeder
             'status' => $data['status'] ?? 'published',
         ]);
 
-        $article->forceFill(['views' => random_int(20, 900), 'love' => random_int(0, 120)])->saveQuietly();
+        // Artikel premium dibuat cukup ramai agar saldo penulis cukup untuk contoh penarikan.
+        $views = $data['premium'] ? random_int(300, 900) : random_int(20, 900);
+
+        $article->forceFill(['views' => $views, 'love' => random_int(0, 120)])->saveQuietly();
 
         Auth::logout();
     }

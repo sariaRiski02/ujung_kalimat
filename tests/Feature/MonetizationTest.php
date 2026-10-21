@@ -12,6 +12,26 @@ class MonetizationTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config(['monetization.rate_per_view' => 1000]);
+    }
+
+    public function test_default_rate_is_35_rupiah_per_view(): void
+    {
+        $this->assertSame(35, (require config_path('monetization.php'))['rate_per_view']);
+    }
+
+    public function test_earnings_use_the_configured_rate(): void
+    {
+        config(['monetization.rate_per_view' => 35]);
+        $writer = $this->makeWriter(premiumViews: 1000, freeViews: 500);
+
+        $this->assertSame(35000, $writer->totalEarnings());
+    }
+
     private function makeWriter(int $premiumViews = 0, int $freeViews = 0): User
     {
         $writer = User::factory()->create();

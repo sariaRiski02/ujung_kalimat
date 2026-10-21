@@ -65,6 +65,21 @@ class DashboardTest extends TestCase
         $response->assertSee('1.5K');
     }
 
+    public function test_dashboard_monetization_card_shows_real_balance(): void
+    {
+        config(['monetization.rate_per_view' => 35]);
+        $user = User::factory()->create();
+        $article = $this->makeArticle($user, 'Premium');
+        Article::whereKey($article->id)->update(['is_premium' => true, 'views' => 1000]);
+        $user->withdrawals()->create(['amount' => 10000, 'phone_number' => '081234567890']);
+
+        $this->actingAs($user)->get(route('workspace.dashboard'))
+            ->assertOk()
+            ->assertSee('Rp 25.000')
+            ->assertSee('Total earnings Rp 35.000')
+            ->assertDontSee('$128');
+    }
+
     public function test_recent_articles_lists_only_own_latest_five(): void
     {
         $user = User::factory()->create();

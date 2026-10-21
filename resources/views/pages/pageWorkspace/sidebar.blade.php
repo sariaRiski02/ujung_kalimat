@@ -79,6 +79,25 @@
                 </span>
             </a>
 
+            @if(auth()->user()?->isAdmin())
+            {{-- Admin: Withdrawals --}}
+            <a href="{{ route('admin.withdrawals') }}"
+            class="flex items-center gap-3 px-2 py-2 rounded-lg text-sm {{ request()->routeIs('admin.withdrawals') ? 'text-gray-900 bg-gray-100' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900' }} transition-colors"
+            :class="open ? '' : 'justify-center'"
+            >
+                <i class="ti ti-cash-banknote text-lg shrink-0"></i>
+
+                <span
+                    x-show="open"
+                    x-transition:enter="transition ease-out duration-200 delay-200"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                >
+                    Withdrawals
+                </span>
+            </a>
+            @endif
+
             <!-- Divider -->
             <div class="my-2 border-t border-gray-100"></div>
 

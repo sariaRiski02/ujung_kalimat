@@ -71,12 +71,13 @@
                 </div>
             </a>
 
-            <!-- Monetization (dummy) -->
+            <!-- Monetization -->
             <a href="{{ route('workspace.monetization') }}" class="block bg-amber-50 border border-amber-100 rounded-xl p-5 hover:shadow-sm transition">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-amber-600 font-medium">Monetization</p>
-                        <p class="text-3xl font-bold text-gray-900 mt-1">$128</p>
+                        <p class="text-sm text-amber-600 font-medium">Available Balance</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-1">Rp {{ number_format($availableBalance, 0, ',', '.') }}</p>
+                        <p class="text-xs text-gray-400 mt-1">Total earnings Rp {{ number_format($totalEarnings, 0, ',', '.') }}</p>
                     </div>
                     <i class="ti ti-coins text-3xl text-amber-500"></i>
                 </div>

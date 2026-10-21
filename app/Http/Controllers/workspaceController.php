@@ -39,6 +39,8 @@ class workspaceController extends Controller
             'commentsCount' => Comment::whereRelation('article', 'user_id', $user->id)->count(),
             'followersCount' => $user->followers()->count(),
             'followingCount' => $user->following()->count(),
+            'totalEarnings' => $user->totalEarnings(),
+            'availableBalance' => $user->availableBalance(),
             'recentArticles' => $user->article()->latest()->orderByDesc('id')->limit(5)->get(['id', 'title', 'slug', 'status', 'created_at']),
         ]);
     }

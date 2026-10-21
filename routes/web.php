@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminWithdrawalController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FollowController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\listArticleWorkspaceController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\workspaceController;
+use App\Http\Middleware\EnsureUserIsAdmin;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
@@ -50,6 +52,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/article/id/analytics', [workspaceController::class, 'analytics'])->name('workspace.article.analytics');
 
     });
+    Route::middleware(EnsureUserIsAdmin::class)->prefix('admin')->group(function () {
+        Route::get('/withdrawals', [AdminWithdrawalController::class, 'index'])->name('admin.withdrawals');
+        Route::patch('/withdrawals/{withdrawal}/paid', [AdminWithdrawalController::class, 'markAsPaid'])->name('admin.withdrawals.paid');
+        Route::patch('/withdrawals/{withdrawal}/reject', [AdminWithdrawalController::class, 'reject'])->name('admin.withdrawals.reject');
+    });
+
     Route::post('/pay', [PaymentController::class, 'pay'])->name('pay');
     Route::get('/pay/{payment:order_id}/status', [PaymentController::class, 'status'])->name('pay.status');
 });
